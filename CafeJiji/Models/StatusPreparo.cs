@@ -1,4 +1,4 @@
-﻿namespace JijiCafe.Models
+﻿namespace CafeJiji.Models
 {
     public enum StatusPreparo
     {
