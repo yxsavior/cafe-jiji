@@ -1,0 +1,17 @@
+﻿# === CONFIGURAÇÕES DO VISUAL STUDIO ===
+.vs/
+**/.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+# === COMPILAÇÃO E OUTPUTS DO .NET ===
+[Dd]ebug/
+[Rr]elease/
+bin/
+obj/
+
+# === SEGURANÇA ===
+.env
+appsettings.Development.json
+appsettings.Local.json
