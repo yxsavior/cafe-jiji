@@ -9,7 +9,7 @@
         public DateOnly? DataAdotacao { get; set; }
         public string? FotoUrl { get; set; }
         public string? NumeroProtocoloONG { get; set; }
-        public int? AdontanteId { get; set; }
+        public int? AdotanteId { get; set; }
         public Adotante? Adotante { get; set; }
     }
 }
