@@ -86,32 +86,6 @@ namespace CafeJiji.Migrations
                     b.HasIndex("AdotanteId");
 
                     b.ToTable("Gatos");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DataChegada = new DateOnly(2026, 4, 10),
-                            FotoUrl = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=500",
-                            Nome = "Mingau",
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DataChegada = new DateOnly(2026, 5, 1),
-                            FotoUrl = "https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=500",
-                            Nome = "Frajola",
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DataChegada = new DateOnly(2026, 3, 15),
-                            FotoUrl = "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?q=80&w=500",
-                            Nome = "Paçoca",
-                            Status = 1
-                        });
                 });
 
             modelBuilder.Entity("CafeJiji.Models.Insumo", b =>
@@ -135,22 +109,6 @@ namespace CafeJiji.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Insumos");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            EstoqueMinimo = 2,
-                            Nome = "Fardo Leite Integral (12L)",
-                            QuantidadeAtual = 5
-                        },
-                        new
-                        {
-                            Id = 2,
-                            EstoqueMinimo = 3,
-                            Nome = "Café em Grãos Blend Especial (1kg)",
-                            QuantidadeAtual = 8
-                        });
                 });
 
             modelBuilder.Entity("CafeJiji.Models.ItemPedido", b =>
@@ -179,6 +137,8 @@ namespace CafeJiji.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PedidoId");
+
+                    b.HasIndex("ProdutoId");
 
                     b.ToTable("ItensPedidos");
                 });
@@ -256,99 +216,6 @@ namespace CafeJiji.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Produtos");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Ativo = true,
-                            AtualizadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(6939),
-                            Categoria = "Cafés",
-                            CriadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(6703),
-                            EstoqueMinimo = 0,
-                            Nome = "Espresso Tradicional",
-                            Preco = 7.50m,
-                            QuantidadeEstoque = 999,
-                            RequerPreparo = true
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Ativo = true,
-                            AtualizadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7106),
-                            Categoria = "Cafés",
-                            CriadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7105),
-                            EstoqueMinimo = 0,
-                            Nome = "Capuccino Gateiro",
-                            Preco = 12.00m,
-                            QuantidadeEstoque = 999,
-                            RequerPreparo = true
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Ativo = true,
-                            AtualizadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7107),
-                            Categoria = "Cafés",
-                            CriadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7107),
-                            EstoqueMinimo = 0,
-                            Nome = "Latte Macchiato",
-                            Preco = 14.50m,
-                            QuantidadeEstoque = 999,
-                            RequerPreparo = true
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Ativo = true,
-                            AtualizadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7109),
-                            Categoria = "Doces",
-                            CriadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7108),
-                            EstoqueMinimo = 3,
-                            Nome = "Fatia de Torta Holandesa",
-                            Preco = 16.00m,
-                            QuantidadeEstoque = 12,
-                            RequerPreparo = false
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Ativo = true,
-                            AtualizadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7110),
-                            Categoria = "Doces",
-                            CriadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7110),
-                            EstoqueMinimo = 5,
-                            Nome = "Brownie de Chocolate",
-                            Preco = 9.50m,
-                            QuantidadeEstoque = 20,
-                            RequerPreparo = false
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Ativo = true,
-                            AtualizadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7111),
-                            Categoria = "Salgados",
-                            CriadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7111),
-                            EstoqueMinimo = 4,
-                            Nome = "Pão de Queijo Recheado",
-                            Preco = 8.00m,
-                            QuantidadeEstoque = 15,
-                            RequerPreparo = false
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Ativo = true,
-                            AtualizadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7113),
-                            Categoria = "Serviços",
-                            CriadoEm = new DateTime(2026, 5, 20, 1, 49, 59, 943, DateTimeKind.Local).AddTicks(7112),
-                            EstoqueMinimo = 0,
-                            Nome = "Taxa de Entrada Gatil",
-                            Preco = 15.00m,
-                            QuantidadeEstoque = 9999,
-                            RequerPreparo = false
-                        });
                 });
 
             modelBuilder.Entity("CafeJiji.Models.Usuario", b =>
@@ -378,32 +245,6 @@ namespace CafeJiji.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Nome = "Kiki",
-                            Perfil = "Gerente",
-                            SenhaHash = "hash_senior_123",
-                            Username = "jiji.senior"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Nome = "Ursula",
-                            Perfil = "Atendente",
-                            SenhaHash = "hash_junior_123",
-                            Username = "jiji.junior"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Nome = "Osono",
-                            Perfil = "Barista",
-                            SenhaHash = "hash_pleno_123",
-                            Username = "jiji.pleno"
-                        });
                 });
 
             modelBuilder.Entity("CafeJiji.Models.Gato", b =>
@@ -422,6 +263,14 @@ namespace CafeJiji.Migrations
                         .HasForeignKey("PedidoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("CafeJiji.Models.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
                 });
 
             modelBuilder.Entity("CafeJiji.Models.Pedido", b =>

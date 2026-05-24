@@ -5,15 +5,39 @@ namespace CafeJiji.Data
 {
     public static class CafeJijiDbSeeder
     {
-        public static void Seed(CafeJijiDbContext context) 
+        public static void Seed(CafeJijiDbContext context, IConfiguration configuration) 
         {
             // 1. SEED DE USUÁRIOS
             if (!context.Set<Usuario>().Any())
             {
+                var srPassword = configuration["SeedUsers:SrPassword"];
+                var midPassword = configuration["SeedUsers:MidPassword"];
+                var jrPassword = configuration["SeedUsers:JrPassword"];
+
                 context.Set<Usuario>().AddRange(
-                    new Usuario { Nome = "Kiki", Username = "jiji.senior", SenhaHash = BCrypt.Net.BCrypt.HashPassword("senha_kiki_123"), Perfil = "Gerente" },
-                    new Usuario { Nome = "Ursula", Username = "jiji.junior", SenhaHash = BCrypt.Net.BCrypt.HashPassword("senha_ursula_123"), Perfil = "Atendente" },
-                    new Usuario { Nome = "Osono", Username = "jiji.pleno", SenhaHash = BCrypt.Net.BCrypt.HashPassword("senha_osono_123"), Perfil = "Barista" }
+                    new Usuario
+                    {
+                        Nome = "Kiki",
+                        Username = "gerente",
+                        SenhaHash = BCrypt.Net.BCrypt.HashPassword(srPassword),
+                        Perfil = "Gerente"
+                    },
+
+                    new Usuario
+                    {
+                        Nome = "Ursula",
+                        Username = "atendente",
+                        SenhaHash = BCrypt.Net.BCrypt.HashPassword(jrPassword),
+                        Perfil = "Atendente"
+                    },
+
+                    new Usuario
+                    {
+                        Nome = "Osono",
+                        Username = "barista",
+                        SenhaHash = BCrypt.Net.BCrypt.HashPassword(midPassword),
+                        Perfil = "Barista"
+                    }
                 );
             }
 

@@ -95,8 +95,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<CafeJijiDbContext>();
-    // context.Database.Migrate(); // Opcional: aplica migrations automaticamente
-    CafeJijiDbSeeder.Seed(context);
+    context.Database.Migrate();
+    CafeJijiDbSeeder.Seed(context, builder.Configuration);
 }
 
 // 8. Pipeline de Execução (Middlewares)
