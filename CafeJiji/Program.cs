@@ -1,36 +1,118 @@
-using Microsoft.EntityFrameworkCore;
 using CafeJiji.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+// using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
+using System.Text;
+using System.Text.Json.Serialization;
 
-// 1. Carrega o .env antes de QUALQUER outra coisa
+// 1. Carrega o .env para a Connection String
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 2. Pega a Connection String direto do arquivo .env
+// 2. Configuração do Banco de Dados
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-
-// 3. Configura o Banco de Dados (ANTES do builder.Build())
 builder.Services.AddDbContext<CafeJijiDbContext>(options =>
     options.UseMySql(
         connectionString,
         ServerVersion.AutoDetect(connectionString)
     ));
 
-// 4. Outros serviços do container
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+// 3. Controllers com suporte a ENUM (mostra "Aberto" em vez de 0)
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
-// 5. AGORA SIM, constrói o app depois de configurar tudo
+// 4. Configuração do Swagger com Suporte a JWT (Cadeado para testes)
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Café Jiji API", Version = "v1" });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header usando o esquema Bearer. Exemplo: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+// 5. Configuração de Autenticação JWT
+var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"] ?? "chave-reserva-com-mais-de-32-caracteres");
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
+builder.Services.AddAuthorization();
+
+// 6. Configuração de CORS (Permitir que o Front-end acesse a API)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+// --- REGISTRO DE SERVICES (Faremos a seguir) ---
+// builder.Services.AddScoped<PedidoService>();
+// -----------------------------------------------
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// 7. Popular o banco automaticamente (Seed)
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<CafeJijiDbContext>();
+    // context.Database.Migrate(); // Opcional: aplica migrations automaticamente
+    CafeJijiDbSeeder.Seed(context);
+}
+
+// 8. Pipeline de Execução (Middlewares)
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CafeJiji v1"));
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll"); // Ativa o CORS
+
+app.UseAuthentication(); // OBRIGATÓRIO vir antes do Authorization
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
