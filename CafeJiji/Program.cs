@@ -2,7 +2,7 @@ using CafeJiji.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-// using Microsoft.OpenApi;
+using CafeJiji.Services;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -85,9 +85,9 @@ builder.Services.AddCors(options =>
     });
 });
 
-// --- REGISTRO DE SERVICES (Faremos a seguir) ---
-// builder.Services.AddScoped<PedidoService>();
-// -----------------------------------------------
+// --- REGISTRO DE SERVICES ---
+builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
