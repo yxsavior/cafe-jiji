@@ -18,7 +18,12 @@ namespace CafeJiji.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            // modelBuilder.Seed();
+            
+            modelBuilder.Entity<Produto>(entity =>
+            {
+                entity.Property(p => p.Preco)
+                    .HasPrecision(10, 2);
+            });
         }
     }
 }
