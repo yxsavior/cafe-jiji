@@ -66,6 +66,11 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<IPedidoService, PedidoService>();
+builder.Services.AddScoped<IProdutoService, ProdutoService>();
+
 // 5. Configuração de Autenticação JWT
 var jwtKey = Environment.GetEnvironmentVariable("Jwt__Key");
 
