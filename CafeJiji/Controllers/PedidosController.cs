@@ -1,0 +1,167 @@
+using CafeJiji.Data;
+using CafeJiji.DTOs;
+using CafeJiji.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+
+namespace CafeJiji.Controllers
+{
+    [ApiController]
+    [Route("api/pedidos")]
+    [Authorize]
+    public class PedidosController : ControllerBase
+    {
+        private readonly CafeJijiDbContext _context;
+
+        public PedidosController(CafeJijiDbContext context)
+        {
+            _context = context;
+        }
+
+        // ABRIR COMANDA
+        [HttpPost]
+        [Authorize(Roles = "Atendente")]
+        public async Task<IActionResult> AbrirPedido(PedidoCreateDTO dto)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var existe = await _context.Set<Pedido>()
+                .AnyAsync(p => p.NumeroMesa == dto.NumeroMesa
+                            && p.Status == StatusPedido.Aberto);
+
+            if (existe)
+                return BadRequest(new { mensagem = "Já existe comanda aberta para essa mesa." });
+
+            var pedido = new Pedido
+            {
+                NumeroMesa = dto.NumeroMesa,
+                UsuarioId = userId,
+                Status = StatusPedido.Aberto,
+                CriadoEm = DateTime.Now,
+                Total = 0
+            };
+
+            _context.Add(pedido);
+            await _context.SaveChangesAsync();
+
+            return Ok(pedido);
+        }
+
+        // ADICIONAR ITEM
+        [HttpPost("{pedidoId}/itens/lote")]
+        [Authorize(Roles = "Atendente")]
+        public async Task<IActionResult> AdicionarItensLote(int pedidoId, AdicionarItensPedidoDTO dto)
+        {
+            var pedido = await _context.Set<Pedido>()
+                .Include(p => p.Itens)
+                .FirstOrDefaultAsync(p => p.Id == pedidoId);
+
+            if (pedido == null)
+                return NotFound(new { mensagem = "Pedido não encontrado" });
+
+            if (pedido.Status != StatusPedido.Aberto)
+                return BadRequest(new { mensagem = "Pedido já finalizado" });
+
+            var produtosIds = dto.Itens.Select(i => i.ProdutoId).ToList();
+
+            var produtos = await _context.Set<Produto>()
+                .Where(p => produtosIds.Contains(p.Id))
+                .ToListAsync();
+
+            if (produtos.Count != produtosIds.Count)
+                return BadRequest(new { mensagem = "Um ou mais produtos não existem" });
+
+            foreach (var itemDto in dto.Itens)
+            {
+                var produto = produtos.First(p => p.Id == itemDto.ProdutoId);
+
+                if (produto.QuantidadeEstoque < itemDto.Quantidade)
+                {
+                    return BadRequest(new
+                    {
+                        mensagem = $"Estoque insuficiente para {produto.Nome}"
+                    });
+                }
+
+                produto.QuantidadeEstoque -= itemDto.Quantidade;
+
+                var item = new ItemPedido
+                {
+                    PedidoId = pedido.Id,
+                    ProdutoId = produto.Id,
+                    Quantidade = itemDto.Quantidade,
+                    PrecoUnitario = produto.Preco,
+                    Status = produto.RequerPreparo
+                        ? StatusPreparo.Pendente
+                        : StatusPreparo.Pronto
+                };
+
+                pedido.Itens.Add(item);
+
+                pedido.Total += item.Quantidade * item.PrecoUnitario;
+
+                _context.Add(item);
+            }
+
+            pedido.AtualizadoEm = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                mensagem = "Itens adicionados com sucesso",
+                total = pedido.Total
+            });
+        }
+        // COZINHA
+        [HttpGet("cozinha")]
+        [Authorize(Roles = "Cozinha,Atendente")]
+        public async Task<IActionResult> Cozinha()
+        {
+            var dados = await _context.Set<ItemPedido>()
+                .Include(i => i.Produto)
+                .Include(i => i.Pedido)
+                .Where(i => i.Status == StatusPreparo.Pendente)
+                .GroupBy(i => i.Pedido.NumeroMesa)
+                .Select(g => new MesaCozinhaDTO
+                {
+                    NumeroMesa = g.Key,
+
+                    Itens = g.Select(i => new ItemMesaCozinhaDTO
+                    {
+                        NomeProduto = i.Produto.Nome,
+                        Quantidade = i.Quantidade,
+                        HorarioPedido = i.Pedido.CriadoEm
+                    }).ToList()
+                })
+                .OrderBy(x => x.Itens.Min(i => i.HorarioPedido))
+                .ToListAsync();
+
+            return Ok(dados);
+        }
+
+        // FINALIZAR COMANDA
+        [HttpPut("{pedidoId}/finalizar")]
+        [Authorize(Roles = "Atendente")]
+        public async Task<IActionResult> Finalizar(int pedidoId)
+        {
+            var pedido = await _context.Set<Pedido>()
+                .FirstOrDefaultAsync(p => p.Id == pedidoId);
+
+            if (pedido == null)
+                return NotFound();
+
+            if (pedido.Status != StatusPedido.Aberto)
+                return BadRequest(new { mensagem = "Pedido já finalizado." });
+
+            pedido.Status = StatusPedido.Finalizado;
+            pedido.AtualizadoEm = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensagem = "Comanda finalizada com sucesso." });
+        }
+    }
+}

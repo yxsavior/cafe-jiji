@@ -6,6 +6,7 @@ using CafeJiji.Services;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
+using CafeJiji.Middlewares;
 
 // 1. Carrega o .env para a Connection String
 DotNetEnv.Env.Load();
@@ -125,6 +126,8 @@ app.UseCors("AllowAll"); // Ativa o CORS
 
 app.UseAuthentication(); // OBRIGATÓRIO vir antes do Authorization
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 
