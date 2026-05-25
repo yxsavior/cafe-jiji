@@ -43,7 +43,7 @@ namespace CafeJiji.Data
                         Nome = "Osono",
                         Username = "barista",
                         SenhaHash = BCrypt.Net.BCrypt.HashPassword(midPassword),
-                        Perfil = "Barista"
+                        Perfil = "Cozinha"
                     }
                 );
             }

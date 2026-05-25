@@ -56,6 +56,7 @@ namespace CafeJiji.Controllers
         {
             var pedido = await _context.Set<Pedido>()
                 .Include(p => p.Itens)
+                    .ThenInclude(i => i.Produto)
                 .FirstOrDefaultAsync(p => p.Id == pedidoId);
 
             if (pedido == null)
@@ -142,6 +143,41 @@ namespace CafeJiji.Controllers
             return Ok(dados);
         }
 
+        // ATUALIZAR STATUS
+        [HttpPut("itens/{idItem}/status")]
+        [Authorize(Roles = "Cozinha,Atendente")]
+        public async Task<IActionResult> AtualizarStatus(int idItem)
+        {
+            var item = await _context.Set<ItemPedido>()
+                .FirstOrDefaultAsync(i => i.Id == idItem);
+
+            if (item == null)
+                return NotFound();
+
+            if (item.Status == StatusPreparo.Pronto)
+            return BadRequest(new { mensagem = "Item já está pronto." });
+
+            item.Status = StatusPreparo.Pronto;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensagem = "Item pronto." });
+        }
+
+        // PEDIDOS ATIVOS
+        [HttpGet("ativos")]
+        [Authorize(Roles = "Atendente,Admin")]
+        public async Task<IActionResult> GetAtivos()
+        {
+            var pedidos = await _context.Set<Pedido>()
+                .Include(p => p.Itens)
+                    .ThenInclude(i => i.Produto)
+                .Where(p => p.Status == StatusPedido.Aberto)
+                .ToListAsync();
+
+            return Ok(pedidos);
+        }
+
         // FINALIZAR COMANDA
         [HttpPut("{pedidoId}/finalizar")]
         [Authorize(Roles = "Atendente")]
@@ -155,6 +191,12 @@ namespace CafeJiji.Controllers
 
             if (pedido.Status != StatusPedido.Aberto)
                 return BadRequest(new { mensagem = "Pedido já finalizado." });
+
+            var itensPendentes = await _context.Set<ItemPedido>()
+                .AnyAsync(i => i.PedidoId == pedidoId && i.Status == StatusPreparo.Pendente);
+
+            if (itensPendentes)
+                return BadRequest(new { mensagem = "Ainda existem itens pendentes na cozinha." });
 
             pedido.Status = StatusPedido.Finalizado;
             pedido.AtualizadoEm = DateTime.Now;
