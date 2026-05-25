@@ -6,14 +6,22 @@ using CafeJiji.Services;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
+using CafeJiji.Middlewares;
 
 // 1. Carrega o .env para a Connection String
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 2. Configuração do Banco de Dados
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new Exception("Connection string não encontrada no .env");
+}
+
+// 2. Configuração do Banco de Dados
+// var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 builder.Services.AddDbContext<CafeJijiDbContext>(options =>
     options.UseMySql(
         connectionString,
@@ -31,7 +39,12 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Café Jiji API", Version = "v1" });
+    c.SwaggerDoc("v1", new()
+    {
+        Title = "CafeJiji API",
+        Version = "v1",
+        Description = "Sistema de gestão de pedidos e cozinha do Café Gateiro"
+    });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header usando o esquema Bearer. Exemplo: \"Bearer {token}\"",
@@ -53,7 +66,13 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // 5. Configuração de Autenticação JWT
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"] ?? "chave-reserva-com-mais-de-32-caracteres");
+var jwtKey = Environment.GetEnvironmentVariable("Jwt__Key");
+
+if (string.IsNullOrEmpty(jwtKey))
+    throw new Exception("Jwt__Key não encontrada no .env");
+
+var key = Encoding.ASCII.GetBytes(jwtKey);
+
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -112,6 +131,8 @@ app.UseCors("AllowAll"); // Ativa o CORS
 
 app.UseAuthentication(); // OBRIGATÓRIO vir antes do Authorization
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

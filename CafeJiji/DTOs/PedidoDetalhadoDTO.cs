@@ -1,8 +1,8 @@
 ﻿namespace CafeJiji.DTOs
 {
-    public class ResumoMesaResponseDTO
+    public class PedidoDetalhadoDTO
     {
-        public int PedidosId { get; set; }
+        public int PedidoId { get; set; }
         public int NumeroMesa {  get; set; }
         public string NomeAtendente { get; set; } = string.Empty;
         public List<ItemExtratoDTO> ItensConsumidos { get; set; } = new();

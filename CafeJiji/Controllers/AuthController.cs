@@ -18,6 +18,9 @@ namespace CafeJiji.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
+        [ProducesResponseType(typeof(LoginResponseDTO), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(500)]
         public ActionResult<LoginResponseDTO> Login([FromBody] LoginRequestDTO dto)
         {
             try

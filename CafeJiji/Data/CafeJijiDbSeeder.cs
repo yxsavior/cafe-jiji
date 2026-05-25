@@ -14,6 +14,13 @@ namespace CafeJiji.Data
                 var midPassword = configuration["SeedUsers:MidPassword"];
                 var jrPassword = configuration["SeedUsers:JrPassword"];
 
+                if (string.IsNullOrEmpty(srPassword) ||
+                    string.IsNullOrEmpty(midPassword) ||
+                    string.IsNullOrEmpty(jrPassword))
+                {
+                    throw new Exception("SeedUsers não configurado no .env");
+                }
+
                 context.Set<Usuario>().AddRange(
                     new Usuario
                     {
@@ -36,7 +43,7 @@ namespace CafeJiji.Data
                         Nome = "Osono",
                         Username = "barista",
                         SenhaHash = BCrypt.Net.BCrypt.HashPassword(midPassword),
-                        Perfil = "Barista"
+                        Perfil = "Cozinha"
                     }
                 );
             }
