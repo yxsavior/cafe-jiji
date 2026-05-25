@@ -12,8 +12,15 @@ DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 2. Configuração do Banco de Dados
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new Exception("Connection string não encontrada no .env");
+}
+
+// 2. Configuração do Banco de Dados
+// var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 builder.Services.AddDbContext<CafeJijiDbContext>(options =>
     options.UseMySql(
         connectionString,
@@ -53,7 +60,13 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // 5. Configuração de Autenticação JWT
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"] ?? "chave-reserva-com-mais-de-32-caracteres");
+var jwtKey = Environment.GetEnvironmentVariable("Jwt__Key");
+
+if (string.IsNullOrEmpty(jwtKey))
+    throw new Exception("Jwt__Key não encontrada no .env");
+
+var key = Encoding.ASCII.GetBytes(jwtKey);
+
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
