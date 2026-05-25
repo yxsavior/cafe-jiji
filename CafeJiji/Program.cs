@@ -39,7 +39,12 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Café Jiji API", Version = "v1" });
+    c.SwaggerDoc("v1", new()
+    {
+        Title = "CafeJiji API",
+        Version = "v1",
+        Description = "Sistema de gestão de pedidos e cozinha do Café Gateiro"
+    });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header usando o esquema Bearer. Exemplo: \"Bearer {token}\"",

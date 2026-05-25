@@ -20,7 +20,9 @@ namespace CafeJiji.Controllers
             _context = context;
         }
 
-        // ABRIR COMANDA
+        /// <summary>
+        /// Abre uma nova comanda para uma mesa.
+        /// </summary>
         [HttpPost]
         [Authorize(Roles = "Atendente")]
         public async Task<IActionResult> AbrirPedido(PedidoCreateDTO dto)
@@ -76,6 +78,13 @@ namespace CafeJiji.Controllers
 
             foreach (var itemDto in dto.Itens)
             {
+                if (itemDto.Quantidade <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        mensagem = "Quantidade deve ser maior que zero"
+                    });
+                }
                 var produto = produtos.First(p => p.Id == itemDto.ProdutoId);
 
                 if (produto.QuantidadeEstoque < itemDto.Quantidade)
@@ -121,15 +130,17 @@ namespace CafeJiji.Controllers
         [Authorize(Roles = "Cozinha,Atendente")]
         public async Task<IActionResult> Cozinha()
         {
-            var dados = await _context.Set<ItemPedido>()
+            var itens = await _context.Set<ItemPedido>()
                 .Include(i => i.Produto)
                 .Include(i => i.Pedido)
                 .Where(i => i.Status == StatusPreparo.Pendente)
+                .ToListAsync();
+            
+           var dados = itens
                 .GroupBy(i => i.Pedido.NumeroMesa)
                 .Select(g => new MesaCozinhaDTO
                 {
                     NumeroMesa = g.Key,
-
                     Itens = g.Select(i => new ItemMesaCozinhaDTO
                     {
                         NomeProduto = i.Produto.Nome,
@@ -138,8 +149,7 @@ namespace CafeJiji.Controllers
                     }).ToList()
                 })
                 .OrderBy(x => x.Itens.Min(i => i.HorarioPedido))
-                .ToListAsync();
-
+                .ToList(); 
             return Ok(dados);
         }
 
@@ -170,9 +180,24 @@ namespace CafeJiji.Controllers
         public async Task<IActionResult> GetAtivos()
         {
             var pedidos = await _context.Set<Pedido>()
-                .Include(p => p.Itens)
-                    .ThenInclude(i => i.Produto)
                 .Where(p => p.Status == StatusPedido.Aberto)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.NumeroMesa,
+                    p.Status,
+                    p.Total,
+
+                    Itens = p.Itens.Select(i => new ItemPedidoResponseDTO
+                    {
+                        Id = i.Id,
+                        ProdutoId = i.ProdutoId,
+                        NomeProduto = i.Produto.Nome,
+                        Quantidade = i.Quantidade,
+                        PrecoUnitario = i.PrecoUnitario,
+                        Status = i.Status.ToString()
+                    })
+                })
                 .ToListAsync();
 
             return Ok(pedidos);
