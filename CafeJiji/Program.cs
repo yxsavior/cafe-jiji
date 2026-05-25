@@ -44,7 +44,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "CafeJiji API",
         Version = "v1",
-        Description = "Sistema de gestão de pedidos e cozinha do Café Gateiro"
+        Description = "Sistema de gestão de pedidos e cozinha do Café Jiji"
     });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -131,14 +131,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CafeJiji v1"));
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll"); // Ativa o CORS
 
 app.UseAuthentication(); // OBRIGATÓRIO vir antes do Authorization
 app.UseAuthorization();
-
-app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

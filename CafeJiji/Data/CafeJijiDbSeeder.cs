@@ -54,7 +54,7 @@ namespace CafeJiji.Data
                 context.Set<Produto>().AddRange(
                     // Categoria: Cafés
                     new Produto { Nome = "Espresso Tradicional", Preco = 7.50m, Categoria = "Cafés", QuantidadeEstoque = 999, EstoqueMinimo = 0, RequerPreparo = true, Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now },
-                    new Produto { Nome = "Capuccino Gateiro", Preco = 12.00m, Categoria = "Cafés", QuantidadeEstoque = 999, EstoqueMinimo = 0, RequerPreparo = true, Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now },
+                    new Produto { Nome = "Capuccino Jiji", Preco = 12.00m, Categoria = "Cafés", QuantidadeEstoque = 999, EstoqueMinimo = 0, RequerPreparo = true, Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now },
                     new Produto { Nome = "Latte Macchiato", Preco = 14.50m, Categoria = "Cafés", QuantidadeEstoque = 999, EstoqueMinimo = 0, RequerPreparo = true, Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now },
 
                     // Categoria: Doces
