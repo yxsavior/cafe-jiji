@@ -24,7 +24,7 @@ namespace CafeJiji.Controllers
         /// Abre uma nova comanda para uma mesa.
         /// </summary>
         [HttpPost]
-        [Authorize(Roles = "Atendente")]
+        [Authorize(Roles = "Atendente,Gerente")]
         public async Task<IActionResult> AbrirPedido(PedidoCreateDTO dto)
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -53,7 +53,7 @@ namespace CafeJiji.Controllers
 
         // ADICIONAR ITEM
         [HttpPost("{pedidoId}/itens/lote")]
-        [Authorize(Roles = "Atendente")]
+        [Authorize(Roles = "Atendente,Gerente")]
         public async Task<IActionResult> AdicionarItensLote(int pedidoId, AdicionarItensPedidoDTO dto)
         {
             var pedido = await _context.Set<Pedido>()
@@ -127,7 +127,7 @@ namespace CafeJiji.Controllers
         }
         // COZINHA
         [HttpGet("cozinha")]
-        [Authorize(Roles = "Cozinha,Atendente")]
+        [Authorize(Roles = "Cozinha,Atendente,Gerente")]
         public async Task<IActionResult> Cozinha()
         {
             var itens = await _context.Set<ItemPedido>()
@@ -155,7 +155,7 @@ namespace CafeJiji.Controllers
 
         // ATUALIZAR STATUS
         [HttpPut("itens/{idItem}/status")]
-        [Authorize(Roles = "Cozinha,Atendente")]
+        [Authorize(Roles = "Cozinha,Gerente")]
         public async Task<IActionResult> AtualizarStatus(int idItem)
         {
             var item = await _context.Set<ItemPedido>()
@@ -176,7 +176,7 @@ namespace CafeJiji.Controllers
 
         // PEDIDOS ATIVOS
         [HttpGet("ativos")]
-        [Authorize(Roles = "Atendente,Admin")]
+        [Authorize(Roles = "Atendente,Gerente")]
         public async Task<IActionResult> GetAtivos()
         {
             var pedidos = await _context.Set<Pedido>()
@@ -205,7 +205,7 @@ namespace CafeJiji.Controllers
 
         // FINALIZAR COMANDA
         [HttpPut("{pedidoId}/finalizar")]
-        [Authorize(Roles = "Atendente")]
+        [Authorize(Roles = "Atendente,Gerente")]
         public async Task<IActionResult> Finalizar(int pedidoId)
         {
             var pedido = await _context.Set<Pedido>()

@@ -27,7 +27,7 @@ namespace CafeJiji.Services
             {
                 new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
                 new Claim(ClaimTypes.Name, usuario.Nome),
-                new Claim(ClaimTypes.Role, usuario.Perfil) // Admin, Atendente, Cozinha
+                new Claim(ClaimTypes.Role, usuario.Perfil) // Gerente, Atendente, Cozinha
             };
 
             var creds = new SigningCredentials(
