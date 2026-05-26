@@ -85,7 +85,7 @@
     <div class="container my-5">
         <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap" id="containerFiltros">
             <button class="btn btn-outline-dark active" onclick="filtrar('Todos')">Todos</button>
-            <button class="btn btn-outline-dark" onclick="filtrar('Cafés')">Cafés</button>
+            <button class="btn btn-outline-dark" onclick="filtrar('Cafés')">Bebidas</button>
             <button class="btn btn-outline-dark" onclick="filtrar('Doces')">Doces</button>
             <button class="btn btn-outline-dark" onclick="filtrar('Salgados')">Salgados</button>
         </div>
@@ -104,7 +104,8 @@
         async function carregarCardapio() {
             try {
                 const response = await fetch('http://localhost:5120/api/produtos');
-                todosProdutos = await response.json();
+                const dadosBrutos = await response.json();
+                todosProdutos = dadosBrutos.filter(p => p.categoria !== 'Serviços');
                 renderizarProdutos(todosProdutos);
             } catch (error) {
                 document.getElementById('gridProdutos').innerHTML = `<div class="alert alert-danger text-center">Erro ao conectar com o Café Jiji.</div>`;

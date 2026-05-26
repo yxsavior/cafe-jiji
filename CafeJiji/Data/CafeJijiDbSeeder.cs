@@ -52,21 +52,104 @@ namespace CafeJiji.Data
             if (!context.Set<Produto>().Any())
             {
                 context.Set<Produto>().AddRange(
-                    // Categoria: Cafés
-                    new Produto { Nome = "Espresso Tradicional", Preco = 7.50m, Categoria = "Cafés", QuantidadeEstoque = 999, EstoqueMinimo = 0, RequerPreparo = true, ImagemUrl = "/images/expresso.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now },
-                    new Produto { Nome = "Capuccino Jiji", Preco = 12.00m, Categoria = "Cafés", QuantidadeEstoque = 999, EstoqueMinimo = 0, RequerPreparo = true, Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now },
-                    new Produto { Nome = "Latte Macchiato", Preco = 14.50m, Categoria = "Cafés", QuantidadeEstoque = 999, EstoqueMinimo = 0, RequerPreparo = true, Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now },
+                // ==================== CATEGORIA: CAFÉS & BEBIDAS ====================
+                new Produto { 
+                    Nome = "Espresso Tradicional", Preco = 7.50m, Categoria = "Cafés", 
+                    QuantidadeEstoque = 9, EstoqueMinimo = 0, RequerPreparo = true, 
+                    ImagemUrl = "/images/espresso.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Capuccino Jiji", Preco = 12.00m, Categoria = "Cafés", 
+                    QuantidadeEstoque = 9, EstoqueMinimo = 0, RequerPreparo = true, 
+                    ImagemUrl = "/images/capuccino-jiji.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Latte Macchiato", Preco = 14.50m, Categoria = "Cafés", 
+                    QuantidadeEstoque = 9, EstoqueMinimo = 0, RequerPreparo = true, 
+                    ImagemUrl = "/images/latte-macchiato.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Chocolate Quente Cremoso", Preco = 11.00m, Categoria = "Cafés", 
+                    QuantidadeEstoque = 9, EstoqueMinimo = 0, RequerPreparo = true, 
+                    ImagemUrl = "/images/chocolate-quente.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Iced Tea de Frutas Vermelhas", Preco = 10.50m, Categoria = "Cafés", 
+                    QuantidadeEstoque = 9, EstoqueMinimo = 0, RequerPreparo = true, 
+                    ImagemUrl = "/images/iced-tea.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Suco Gato Laranja", Preco = 9.00m, Categoria = "Cafés", 
+                    QuantidadeEstoque = 9, EstoqueMinimo = 0, RequerPreparo = true, 
+                    ImagemUrl = "/images/suco-laranja.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
 
-                    // Categoria: Doces
-                    new Produto { Nome = "Fatia de Torta Holandesa", Preco = 16.00m, Categoria = "Doces", QuantidadeEstoque = 12, EstoqueMinimo = 3, RequerPreparo = false, Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now },
-                    new Produto { Nome = "Brownie de Chocolate", Preco = 9.50m, Categoria = "Doces", QuantidadeEstoque = 20, EstoqueMinimo = 5, RequerPreparo = false, Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now },
+                // ==================== CATEGORIA: DOCES ====================
+                new Produto { 
+                    Nome = "Fatia de Torta Holandesa", Preco = 16.00m, Categoria = "Doces", 
+                    QuantidadeEstoque = 12, EstoqueMinimo = 3, RequerPreparo = false, 
+                    ImagemUrl = "/images/torta-holandesa.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Brownie com Sorvete", Preco = 15.50m, Categoria = "Doces", 
+                    QuantidadeEstoque = 20, EstoqueMinimo = 5, RequerPreparo = true, // Requer preparo para montar e aquecer
+                    ImagemUrl = "/images/brownie-sorvete.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Bolo Mágico Jiji", Preco = 14.00m, Categoria = "Doces", 
+                    QuantidadeEstoque = 10, EstoqueMinimo = 2, RequerPreparo = false, 
+                    ImagemUrl = "/images/bolo-jiji.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Cheesecake com Geleia de Frutas Vermelhas", Preco = 18.00m, Categoria = "Doces", 
+                    QuantidadeEstoque = 8, EstoqueMinimo = 2, RequerPreparo = false, 
+                    ImagemUrl = "/images/cheesecake.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Totoro Puff (Choux Cream)", Preco = 13.50m, Categoria = "Doces", 
+                    QuantidadeEstoque = 15, EstoqueMinimo = 4, RequerPreparo = false, 
+                    ImagemUrl = "/images/totoro-puff.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Croissant de Morango e Chocolate", Preco = 16.50m, Categoria = "Doces", 
+                    QuantidadeEstoque = 12, EstoqueMinimo = 3, RequerPreparo = true, // Aquecido na hora
+                    ImagemUrl = "/images/croissant-morango.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Petit Gatô", Preco = 16.50m, Categoria = "Doces", 
+                    QuantidadeEstoque = 12, EstoqueMinimo = 3, RequerPreparo = false,
+                    ImagemUrl = "/images/petit-gato.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
 
-                    // Categoria: Salgados
-                    new Produto { Nome = "Pão de Queijo Recheado", Preco = 8.00m, Categoria = "Salgados", QuantidadeEstoque = 15, EstoqueMinimo = 4, RequerPreparo = false, Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now },
+                // ==================== CATEGORIA: SALGADOS ====================
+                new Produto { 
+                    Nome = "Pão de Queijo de Gatinho", Preco = 9.00m, Categoria = "Salgados", 
+                    QuantidadeEstoque = 10, EstoqueMinimo = 5, RequerPreparo = true, // Assado na hora!
+                    ImagemUrl = "/images/pao-de-queijo-gatinho.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Croissant de Salmão e Ovo Poché", Preco = 24.00m, Categoria = "Salgados", 
+                    QuantidadeEstoque = 10, EstoqueMinimo = 2, RequerPreparo = true, // Cozinha gourmet feita na hora
+                    ImagemUrl = "/images/croissant-salmao.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Misto Quente de Queijo com Presunto", Preco = 11.50m, Categoria = "Salgados", 
+                    QuantidadeEstoque = 10, EstoqueMinimo = 0, RequerPreparo = true, 
+                    ImagemUrl = "/images/misto-presunto.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
+                new Produto { 
+                    Nome = "Misto Cremoso de Frango", Preco = 13.00m, Categoria = "Salgados", 
+                    QuantidadeEstoque = 10, EstoqueMinimo = 0, RequerPreparo = true, 
+                    ImagemUrl = "/images/misto-frango.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                },
 
-                    // Categoria: Serviços
-                    new Produto { Nome = "Taxa de Entrada Gatil", Preco = 15.00m, Categoria = "Serviços", QuantidadeEstoque = 9999, EstoqueMinimo = 0, RequerPreparo = false, Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now }
-                );
+                // ==================== CATEGORIA: SERVIÇOS ====================
+                new Produto { 
+                    Nome = "Taxa de Entrada Gatil", Preco = 15.00m, Categoria = "Serviços", 
+                    QuantidadeEstoque = 100, EstoqueMinimo = 0, RequerPreparo = false, 
+                    ImagemUrl = "/images/padrao.jpg", Ativo = true, CriadoEm = DateTime.Now, AtualizadoEm = DateTime.Now 
+                }
+            );
             }
 
             // 3. SEED DE GATOS
