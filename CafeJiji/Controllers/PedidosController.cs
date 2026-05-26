@@ -171,5 +171,102 @@ namespace CafeJiji.Controllers
                 return BadRequest(new { mensagem = ex.Message });
             }
         }
+
+        [HttpGet("dashboard")]
+        [Authorize(Roles = "Gerente")]
+        public async Task<IActionResult> GetDashboard()
+        {
+            var db = HttpContext.RequestServices.GetService<CafeJiji.Data.CafeJijiDbContext>()!;
+
+            try
+            {
+                var hoje = DateTime.UtcNow;
+                var inicioMesAtual = new DateTime(hoje.Year, hoje.Month, 1);
+                var inicioMesAnterior = inicioMesAtual.AddMonths(-1);
+
+                // 1. Faturamento Mensal (Mês Atual)
+                var faturamentoMensal = await db.Set<CafeJiji.Models.Pedido>()
+                    .Where(p => p.Status == CafeJiji.Models.StatusPedido.Finalizado && p.CriadoEm >= inicioMesAtual)
+                    .SumAsync(p => p.Total);
+
+                // 2. Faturamento do Mês Anterior (para calcular o % de crescimento)
+                var faturamentoMesAnterior = await db.Set<CafeJiji.Models.Pedido>()
+                    .Where(p => p.Status == CafeJiji.Models.StatusPedido.Finalizado && p.CriadoEm >= inicioMesAnterior && p.CriadoEm < inicioMesAtual)
+                    .SumAsync(p => p.Total);
+
+                double percentualCrescimento = 0;
+                if (faturamentoMesAnterior > 0)
+                {
+                    percentualCrescimento = (double)((faturamentoMensal - faturamentoMesAnterior) / faturamentoMesAnterior) * 100;
+                }
+
+                // 3. Pedidos Concluídos no Mês
+                var pedidosConcluidos = await db.Set<CafeJiji.Models.Pedido>()
+                    .CountAsync(p => p.Status == CafeJiji.Models.StatusPedido.Finalizado && p.CriadoEm >= inicioMesAtual);
+
+                // 4. Média de Clientes Diários (Pedidos únicos por dia no mês)
+                var diasComPedidos = await db.Set<CafeJiji.Models.Pedido>()
+                    .Where(p => p.CriadoEm >= inicioMesAtual)
+                    .Select(p => p.CriadoEm.Date)
+                    .Distinct()
+                    .CountAsync();
+
+                int mediaClientesDiarios = diasComPedidos > 0 ? pedidosConcluidos / diasComPedidos : 0;
+
+                // 5. Taxas do Gatil e Visitas (Exemplo se houver um produto/serviço do tipo "Gatil" ou tabela dedicada)
+                // Aqui buscamos produtos vendidos que tenham "Gatil" ou "Visita" na categoria/nome
+                var taxasGatil = await db.Set<CafeJiji.Models.ItemPedido>()
+                    .Where(i => i.Pedido.Status == CafeJiji.Models.StatusPedido.Finalizado && 
+                                i.Pedido.CriadoEm >= inicioMesAtual && 
+                                (i.Produto.Categoria == "Gatil" || i.Produto.Nome.Contains("Visita")))
+                    .SumAsync(i => i.Quantidade * i.PrecoUnitario);
+
+                var visitasAgendadas = await db.Set<CafeJiji.Models.ItemPedido>()
+                    .Where(i => i.Pedido.CriadoEm >= inicioMesAtual && 
+                                (i.Produto.Categoria == "Gatil" || i.Produto.Nome.Contains("Visita")))
+                    .SumAsync(i => i.Quantidade);
+
+                // 6. Dados para o Gráfico de Curva Semanal (Últimos 7 dias)
+                var faturamentoSemanal = new List<decimal>();
+                for (int i = 6; i >= 0; i--)
+                {
+                    var dia = hoje.Date.AddDays(-i);
+                    var totalDia = await db.Set<CafeJiji.Models.Pedido>()
+                        .Where(p => p.Status == CafeJiji.Models.StatusPedido.Finalizado && p.CriadoEm.Date == dia)
+                        .SumAsync(p => p.Total);
+                    faturamentoSemanal.Add(totalDia);
+                }
+
+                // 7. Dados para o Gráfico de Pizza/Donut (Categorias mais vendidas)
+                var categoriasMaisVendidas = await db.Set<CafeJiji.Models.ItemPedido>()
+                    .Where(i => i.Pedido.Status == CafeJiji.Models.StatusPedido.Finalizado && i.Pedido.CriadoEm >= inicioMesAtual)
+                    .GroupBy(i => i.Produto.Categoria)
+                    .Select(g => new CategoriaQuantidadeDTO
+                    {
+                        Categoria = g.Key ?? "Geral",
+                        Quantidade = g.Sum(i => i.Quantidade)
+                    })
+                    .OrderByDescending(c => c.Quantidade)
+                    .Take(4) // Top 4 categorias
+                    .ToListAsync();
+
+                return Ok(new DashboardResponseDTO
+                {
+                    FaturamentoMensal = faturamentoMensal,
+                    PercentualCrescimento = Math.Round(percentualCrescimento, 1),
+                    PedidosConcluidos = pedidosConcluidos,
+                    MediaClientesDiarios = mediaClientesDiarios,
+                    TaxasGatil = taxasGatil,
+                    VisitasAgendadas = visitasAgendadas,
+                    FaturamentoSemanal = faturamentoSemanal,
+                    CategoriasMaisVendidas = categoriasMaisVendidas
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensagem = "Erro ao processar métricas: " + ex.Message });
+            }
+        }
+
     }
 }
