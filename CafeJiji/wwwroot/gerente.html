@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel do Gerente - Café Jiji</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --jiji-brown: #5d4037;
+            --jiji-light: #faf8f5;
+            --jiji-accent: #fcd34d;
+        }
+        body {
+            background-color: var(--jiji-light);
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .sidebar {
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            min-height: 100vh;
+        }
+        .nav-pills .nav-link {
+            color: #4b5563;
+            font-weight: 500;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            transition: all 0.2s;
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--jiji-brown);
+            color: white;
+        }
+        .nav-pills .nav-link:hover:not(.active) {
+            background-color: #f3f4f6;
+            color: var(--jiji-brown);
+        }
+        .jiji-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            background: white;
+            transition: transform 0.2s;
+        }
+        .jiji-card-hover:hover {
+            transform: translateY(-4px);
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            padding: 10px 14px;
+        }
+        .form-control:focus {
+            border-color: var(--jiji-brown);
+            box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.15);
+        }
+        .btn-jiji {
+            background-color: var(--jiji-brown);
+            color: white;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 500;
+            border: none;
+        }
+        .btn-jiji:hover {
+            background-color: #4a322b;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    // Validação de Perfil baseada no seu AuthController/Seeder (Gerente)
+    const role = localStorage.getItem("role");
+    if (!role || role.toLowerCase() !== "gerente") {
+        window.location.replace("index.html");
+    }
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-2 p-4 sidebar d-flex flex-column justify-content-between position-sticky top-0 h-100">
+            <div>
+                <div class="text-center mb-4">
+                    <img src="images/logo.png" alt="Logo" class="img-fluid mb-2" style="max-height: 50px;" onerror="this.style.display='none'">
+                    <h5 class="fw-bold text-dark mb-0">☕ Café Jiji</h5>
+                    <span class="badge bg-light text-muted border mt-1">Gerência</span>
+                </div>
+                
+                <hr class="text-muted mb-4">
+
+                <ul class="nav nav-pills flex-column" id="menuTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-start active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                            📊 Dashboard
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-start" id="produtos-tab" data-bs-toggle="tab" data-bs-target="#produtos" type="button" role="tab">
+                            📦 Produtos
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="d-grid gap-2 mt-5">
+                <a href="index.html" class="btn btn-outline-secondary btn-sm rounded-3">🌐 Ver Site</a>
+                <button class="btn btn-outline-danger btn-sm rounded-3" onclick="logout()">Sair do Painel</button>
+            </div>
+        </aside>
+
+        <main class="col-md-10 p-5 tab-content">
+            <div id="alertBox" class="alert alert-dismissible d-none shadow-sm" role="alert"></div>
+
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="fw-bold text-dark mb-1">Visão Geral</h1>
+                        <p class="text-muted mb-0">Métricas de faturamento e desempenho em tempo real</p>
+                    </div>
+                    <button class="btn btn-outline-dark d-flex align-items-center gap-2" onclick="gerarPDF()">
+                        📄 Exportar Relatório (PDF)
+                    </button>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
+                        <div class="card jiji-card p-4">
+                            <span class="text-muted small fw-bold text-uppercase">Faturamento Mensal</span>
+                            <h2 class="fw-bold text-success mt-2 mb-1">R$ 14.850,00</h2>
+                            <span class="text-muted small">✨ +12% em relação ao mês anterior</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card jiji-card p-4">
+                            <span class="text-muted small fw-bold text-uppercase">Pedidos Concluídos</span>
+                            <h2 class="fw-bold text-dark mt-2 mb-1">342</h2>
+                            <span class="text-muted small">☕ Média de 11 clientes diários</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card jiji-card p-4">
+                            <span class="text-muted small fw-bold text-uppercase">Taxas do Gatil</span>
+                            <h2 class="fw-bold text-primary mt-2 mb-1">R$ 2.450,00</h2>
+                            <span class="text-muted small">🐈 163 visitas agendadas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card jiji-card p-4 h-100">
+                            <h5 class="fw-bold mb-4">Curva de Faturamento Semanal</h5>
+                            <div class="bg-light rounded-4 d-flex align-items-center justify-content-center text-muted" style="height: 300px; border: 2px dashed #e5e7eb;">
+                                📈 [Espaço reservado para o Gráfico de Linhas / Chart.js]
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card jiji-card p-4 h-100">
+                            <h5 class="fw-bold mb-4">Categorias Mais Vendidas</h5>
+                            <div class="bg-light rounded-4 d-flex align-items-center justify-content-center text-muted" style="height: 300px; border: 2px dashed #e5e7eb;">
+                                🍩 [Espaço reservado para o Gráfico de Pizza]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="produtos" role="tabpanel">
+                <div class="mb-4">
+                    <h1 class="fw-bold text-dark mb-1">Gestão do Cardápio</h1>
+                    <p class="text-muted mb-0">Adicione, edite ou remova os produtos do seu menu</p>
+                </div>
+
+                <div class="card jiji-card mb-5">
+                    <div class="card-body p-4">
+                        <h5 id="formTitle" class="fw-bold text-dark mb-4">✨ Criar Novo Produto</h5>
+                        <form id="produtoForm" class="row g-3">
+                            <input type="hidden" id="produtoId">
+                            
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small text-muted">Nome do Produto</label>
+                                <input type="text" class="form-control" id="nome" placeholder="Ex: Capuccino Gateiro" required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small text-muted">Preço (R$)</label>
+                                <input type="number" step="0.01" class="form-control" id="preco" placeholder="12.50" required>
+                            </div>
+
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold small text-muted">Categoria</label>
+                                <select class="form-select" id="categoria" required>
+                                    <option value="Cafés">Cafés</option>
+                                    <option value="Doces">Doces</option>
+                                    <option value="Salgados">Salgados</option>
+                                    <option value="Serviços">Serviços</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted">Quantidade Inicial em Estoque</label>
+                                <input type="number" class="form-control" id="quantidadeEstoque" placeholder="99" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted">Estoque Mínimo Alerta</label>
+                                <input type="number" class="form-control" id="estoqueMinimo" placeholder="5" required>
+                            </div>
+
+                            <div class="col-12 d-flex gap-2 pt-2">
+                                <button type="submit" class="btn btn-jiji px-4">Salvar Alterações</button>
+                                <button type="button" class="btn btn-light px-4 border" onclick="resetarForm()">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <hr class="text-muted my-5">
+
+                <h3 class="fw-bold text-dark mb-4">Produtos Ativos</h3>
+                <div id="listaProdutos" class="row row-cols-1 row-cols-md-3 g-4">
+                    </div>
+            </div>
+        </main>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+const API_URL = "http://localhost:5120/api/produtos"; // Corrigido para HTTP conforme análise anterior
+
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    window.location.replace("index.html");
+}
+
+function showAlert(message, type = "success") {
+    const box = document.getElementById("alertBox");
+    box.className = `alert alert-${type} alert-dismissible shadow-sm`;
+    box.innerHTML = `${message}<button type='button' class='btn-close' data-bs-dismiss='alert'></button>`;
+    box.classList.remove("d-none");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetarForm() {
+    document.getElementById("produtoForm").reset();
+    document.getElementById("produtoId").value = "";
+    document.getElementById("formTitle").innerText = "✨ Criar Novo Produto";
+}
+
+// Configuração de cabeçalhos com Token JWT de Autenticação
+function getHeaders() {
+    const token = localStorage.getItem("token");
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+    };
+}
+
+async function carregarProdutos() {
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("Falha ao buscar cardápio.");
+        
+        const produtos = await response.json();
+        const container = document.getElementById("listaProdutos");
+        container.innerHTML = "";
+
+        produtos.forEach(p => {
+            const col = document.createElement("div");
+            col.className = "col";
+            col.innerHTML = `
+                <div class="card h-100 jiji-card jiji-card-hover p-2">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="fw-bold text-dark mb-0">${p.nome}</h5>
+                            <span class="badge bg-warning text-dark small">R$ ${p.preco.toFixed(2)}</span>
+                        </div>
+                        <p class="text-muted small mb-1"><b>Categoria:</b> ${p.categoria}</p>
+                        <p class="text-muted small mb-3"><b>Estoque:</b> ${p.quantidadeEstoque} un (Mín: ${p.estoqueMinimo})</p>
+                        
+                        <div class="mt-auto pt-2 border-top d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-secondary w-50" onclick="prepararEdicao(${p.id}, '${p.nome}', ${p.preco}, '${p.categoria}', ${p.quantidadeEstoque}, ${p.estoqueMinimo})">✏️ Editar</button>
+                            <button class="btn btn-sm btn-outline-danger w-50" onclick="deletarProduto(${p.id}, '${p.nome}')">🗑️ Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(col);
+        });
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+async function deletarProduto(id, nome) {
+    if (!confirm(`Deseja mesmo remover do cardápio o item "${nome}"?`)) return;
+
+    try {
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: "DELETE",
+            headers: getHeaders()
+        });
+
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.mensagem || "Erro na exclusão.");
+        }
+
+        showAlert(`Produto "${nome}" removido!`);
+        carregarProdutos();
+    } catch (err) {
+        showAlert(err.message, "danger");
+    }
+}
+
+function prepararEdicao(id, nome, preco, categoria, estoque, minimo) {
+    document.getElementById("produtoId").value = id;
+    document.getElementById("nome").value = nome;
+    document.getElementById("preco").value = preco;
+    document.getElementById("categoria").value = categoria;
+    document.getElementById("quantidadeEstoque").value = estoque;
+    document.getElementById("estoqueMinimo").value = minimo;
+    
+    document.getElementById("formTitle").innerText = "📝 Editando Item #" + id;
+    
+    // Altera para a aba do formulário de produtos automaticamente
+    const trigger = document.getElementById('produtos-tab');
+    bootstrap.Tab.getInstance(trigger).show();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById("produtoForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const id = document.getElementById("produtoId").value;
+    const produtoDto = {
+        nome: document.getElementById("nome").value,
+        preco: parseFloat(document.getElementById("preco").value),
+        categoria: document.getElementById("categoria").value,
+        quantidadeEstoque: parseInt(document.getElementById("quantidadeEstoque").value),
+        estoqueMinimo: parseInt(document.getElementById("estoqueMinimo").value),
+        requerPreparo: true,
+        ativo: true
+    };
+
+    try {
+        let response;
+        if (id) {
+            // Chamada PUT
+            response = await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: getHeaders(),
+                body: JSON.stringify(produtoDto)
+            });
+        } else {
+            // Chamada POST
+            response = await fetch(API_URL, {
+                method: "POST",
+                headers: getHeaders(),
+                body: JSON.stringify(produtoDto)
+            });
+        }
+
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.mensagem || "Não foi possível salvar os dados.");
+        }
+
+        showAlert(id ? "Cardápio atualizado com sucesso!" : "Novo produto inserido com sucesso!");
+        resetarForm();
+        carregarProdutos();
+    } catch (err) {
+        showAlert(err.message, "danger");
+    }
+});
+
+// GERAÇÃO DE PDF DO RELATÓRIO DO DASHBOARD
+function gerarPDF() {
+    const elemento = document.getElementById("dashboard");
+    const opcoes = {
+        margin:       10,
+        filename:     'Relatorio_Faturamento_CafeJiji.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+    html2pdf().set(opces).from(elemento).save();
+}
+
+// Inicializa a tela baixando os produtos
+carregarProdutos();
+</script>
+</body>
+</html>
