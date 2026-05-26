@@ -215,15 +215,39 @@ namespace CafeJiji.Controllers
 
                 // 5. Taxas do Gatil e Visitas (Exemplo se houver um produto/serviço do tipo "Gatil" ou tabela dedicada)
                 // Aqui buscamos produtos vendidos que tenham "Gatil" ou "Visita" na categoria/nome
+                // var taxasGatil = await db.Set<CafeJiji.Models.ItemPedido>()
+                //     .Where(i => i.Pedido.Status == CafeJiji.Models.StatusPedido.Finalizado && 
+                //                 i.Pedido.CriadoEm >= inicioMesAtual && 
+                //                 (i.Produto.Categoria == "Serviços" || i.Produto.Nome.Contains("Visita")))
+                //     .SumAsync(i => i.Quantidade * i.PrecoUnitario);
+
                 var taxasGatil = await db.Set<CafeJiji.Models.ItemPedido>()
-                    .Where(i => i.Pedido.Status == CafeJiji.Models.StatusPedido.Finalizado && 
-                                i.Pedido.CriadoEm >= inicioMesAtual && 
-                                (i.Produto.Categoria == "Gatil" || i.Produto.Nome.Contains("Visita")))
-                    .SumAsync(i => i.Quantidade * i.PrecoUnitario);
+                        .Where(i =>
+                            i.Pedido.Status == CafeJiji.Models.StatusPedido.Finalizado &&
+                            i.Pedido.CriadoEm >= inicioMesAtual &&
+                            (
+                                i.Produto.Categoria == "Serviços" ||
+                                i.Produto.Nome.Contains("Gatil") ||
+                                i.Produto.Nome.Contains("Visita")
+                            )
+                        )
+                        .SumAsync(i => i.Quantidade * i.PrecoUnitario);
+
+                // var visitasAgendadas = await db.Set<CafeJiji.Models.ItemPedido>()
+                //     .Where(i => i.Pedido.CriadoEm >= inicioMesAtual && 
+                //                 (i.Produto.Categoria == "Serviços" || i.Produto.Nome.Contains("Visita")))
+                //     .SumAsync(i => i.Quantidade);
 
                 var visitasAgendadas = await db.Set<CafeJiji.Models.ItemPedido>()
-                    .Where(i => i.Pedido.CriadoEm >= inicioMesAtual && 
-                                (i.Produto.Categoria == "Gatil" || i.Produto.Nome.Contains("Visita")))
+                    .Where(i =>
+                        i.Pedido.Status == CafeJiji.Models.StatusPedido.Finalizado &&
+                        i.Pedido.CriadoEm >= inicioMesAtual &&
+                        (
+                            i.Produto.Categoria == "Serviços" ||
+                            i.Produto.Nome.Contains("Gatil") ||
+                            i.Produto.Nome.Contains("Visita")
+                        )
+                    )
                     .SumAsync(i => i.Quantidade);
 
                 // 6. Dados para o Gráfico de Curva Semanal (Últimos 7 dias)

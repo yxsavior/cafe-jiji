@@ -48,6 +48,8 @@ namespace CafeJiji.Data
                 );
             }
 
+            context.SaveChanges();
+
             // 2. SEED DE PRODUTOS
             if (!context.Set<Produto>().Any())
             {
@@ -152,6 +154,8 @@ namespace CafeJiji.Data
             );
             }
 
+            context.SaveChanges();
+
             // 3. SEED DE GATOS
             if (!context.Set<Gato>().Any())
             {
@@ -189,6 +193,541 @@ namespace CafeJiji.Data
                     new Insumo { Nome = "Fardo Leite Integral (12L)", QuantidadeAtual = 5, EstoqueMinimo = 2 },
                     new Insumo { Nome = "Café em Grãos Blend Especial (1kg)", QuantidadeAtual = 8, EstoqueMinimo = 3 }
                 );
+            }
+
+            // 5. SEED DE PEDIDOS
+            if (!context.Set<Pedido>().Any())
+            {
+                var pedidos = new List<Pedido>
+                {
+                    // ================= ABRIL =================
+                    new Pedido
+                    {
+                        NumeroMesa = 1,
+                        CriadoEm = new DateTime(2026, 4, 24, 9, 30, 0),
+                        AtualizadoEm = new DateTime(2026, 4, 24, 10, 0, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 31.50m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 2,
+                                Quantidade = 1,
+                                PrecoUnitario = 12.00m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 8,
+                                Quantidade = 1,
+                                PrecoUnitario = 15.50m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 14,
+                                Quantidade = 1,
+                                PrecoUnitario = 9.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 2,
+                        CriadoEm = new DateTime(2026, 4, 25, 14, 10, 0),
+                        AtualizadoEm = new DateTime(2026, 4, 25, 14, 40, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 25.00m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 3,
+                                Quantidade = 1,
+                                PrecoUnitario = 14.50m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 11,
+                                Quantidade = 1,
+                                PrecoUnitario = 13.50m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 3,
+                        CriadoEm = new DateTime(2026, 4, 26, 11, 20, 0),
+                        AtualizadoEm = new DateTime(2026, 4, 26, 12, 0, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 33.00m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 1,
+                                Quantidade = 2,
+                                PrecoUnitario = 7.50m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 13,
+                                Quantidade = 1,
+                                PrecoUnitario = 16.50m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 14,
+                                Quantidade = 1,
+                                PrecoUnitario = 9.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 4,
+                        CriadoEm = new DateTime(2026, 4, 27, 16, 15, 0),
+                        AtualizadoEm = new DateTime(2026, 4, 27, 16, 45, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 29.50m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 5,
+                                Quantidade = 1,
+                                PrecoUnitario = 10.50m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 10,
+                                Quantidade = 1,
+                                PrecoUnitario = 18.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 5,
+                        CriadoEm = new DateTime(2026, 4, 28, 18, 0, 0),
+                        AtualizadoEm = new DateTime(2026, 4, 28, 18, 30, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 37.00m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 15,
+                                Quantidade = 1,
+                                PrecoUnitario = 24.00m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 2,
+                                Quantidade = 1,
+                                PrecoUnitario = 12.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 6,
+                        CriadoEm = new DateTime(2026, 4, 29, 13, 40, 0),
+                        AtualizadoEm = new DateTime(2026, 4, 29, 14, 10, 0),
+                        Status = StatusPedido.Cancelado,
+                        UsuarioId = 2,
+                        Total = 22.50m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 16,
+                                Quantidade = 1,
+                                PrecoUnitario = 11.50m,
+                                Status = StatusPreparo.Pendente
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 4,
+                                Quantidade = 1,
+                                PrecoUnitario = 11.00m,
+                                Status = StatusPreparo.Pendente
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 7,
+                        CriadoEm = new DateTime(2026, 4, 30, 19, 15, 0),
+                        AtualizadoEm = new DateTime(2026, 4, 30, 19, 50, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 41.00m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 17,
+                                Quantidade = 1,
+                                PrecoUnitario = 13.00m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 12,
+                                Quantidade = 1,
+                                PrecoUnitario = 16.50m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 6,
+                                Quantidade = 1,
+                                PrecoUnitario = 9.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    // ================= MAIO =================
+
+                    new Pedido
+                    {
+                        NumeroMesa = 1,
+                        CriadoEm = new DateTime(2026, 5, 25, 9, 0, 0),
+                        AtualizadoEm = new DateTime(2026, 5, 25, 9, 35, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 27.00m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 1,
+                                Quantidade = 2,
+                                PrecoUnitario = 7.50m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 14,
+                                Quantidade = 1,
+                                PrecoUnitario = 9.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 2,
+                        CriadoEm = new DateTime(2026, 5, 26, 10, 10, 0),
+                        AtualizadoEm = new DateTime(2026, 5, 26, 10, 45, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 30.00m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 2,
+                                Quantidade = 1,
+                                PrecoUnitario = 12.00m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 9,
+                                Quantidade = 1,
+                                PrecoUnitario = 14.00m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 6,
+                                Quantidade = 1,
+                                PrecoUnitario = 9.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 3,
+                        CriadoEm = new DateTime(2026, 5, 27, 12, 30, 0),
+                        AtualizadoEm = new DateTime(2026, 5, 27, 13, 0, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 35.50m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 15,
+                                Quantidade = 1,
+                                PrecoUnitario = 24.00m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 4,
+                                Quantidade = 1,
+                                PrecoUnitario = 11.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 4,
+                        CriadoEm = new DateTime(2026, 5, 28, 15, 45, 0),
+                        AtualizadoEm = new DateTime(2026, 5, 28, 16, 15, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 34.50m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 3,
+                                Quantidade = 1,
+                                PrecoUnitario = 14.50m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 13,
+                                Quantidade = 1,
+                                PrecoUnitario = 16.50m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 6,
+                                Quantidade = 1,
+                                PrecoUnitario = 9.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 5,
+                        CriadoEm = new DateTime(2026, 5, 29, 17, 0, 0),
+                        AtualizadoEm = new DateTime(2026, 5, 29, 17, 40, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 31.50m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 8,
+                                Quantidade = 1,
+                                PrecoUnitario = 15.50m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 12,
+                                Quantidade = 1,
+                                PrecoUnitario = 16.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 6,
+                        CriadoEm = new DateTime(2026, 5, 30, 18, 20, 0),
+                        AtualizadoEm = new DateTime(2026, 5, 30, 18, 50, 0),
+                        Status = StatusPedido.Aberto,
+                        UsuarioId = 2,
+                        Total = 20.50m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 5,
+                                Quantidade = 1,
+                                PrecoUnitario = 10.50m,
+                                Status = StatusPreparo.Pendente
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 16,
+                                Quantidade = 1,
+                                PrecoUnitario = 11.50m,
+                                Status = StatusPreparo.Pendente
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 7,
+                        CriadoEm = new DateTime(2026, 5, 31, 20, 0, 0),
+                        AtualizadoEm = new DateTime(2026, 5, 31, 20, 30, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 42.00m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 2,
+                                Quantidade = 2,
+                                PrecoUnitario = 12.00m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 10,
+                                Quantidade = 1,
+                                PrecoUnitario = 18.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    // ================= TAXAS DE GATIL - MAIO =================
+
+                    new Pedido
+                    {
+                        NumeroMesa = 8,
+                        CriadoEm = new DateTime(2026, 5, 20, 10, 15, 0),
+                        AtualizadoEm = new DateTime(2026, 5, 20, 10, 40, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 39.00m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 18,
+                                Quantidade = 2,
+                                PrecoUnitario = 15.00m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 1,
+                                Quantidade = 1,
+                                PrecoUnitario = 7.50m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 14,
+                                Quantidade = 1,
+                                PrecoUnitario = 9.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 4,
+                        CriadoEm = new DateTime(2026, 5, 21, 14, 20, 0),
+                        AtualizadoEm = new DateTime(2026, 5, 21, 15, 0, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 45.00m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 18,
+                                Quantidade = 3,
+                                PrecoUnitario = 15.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 2,
+                        CriadoEm = new DateTime(2026, 5, 22, 16, 10, 0),
+                        AtualizadoEm = new DateTime(2026, 5, 22, 16, 50, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 58.50m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 18,
+                                Quantidade = 3,
+                                PrecoUnitario = 15.00m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 2,
+                                Quantidade = 1,
+                                PrecoUnitario = 12.00m,
+                                Status = StatusPreparo.Pronto
+                            },
+                            new ItemPedido
+                            {
+                                ProdutoId = 14,
+                                Quantidade = 1,
+                                PrecoUnitario = 9.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+
+                    new Pedido
+                    {
+                        NumeroMesa = 6,
+                        CriadoEm = new DateTime(2026, 5, 23, 18, 30, 0),
+                        AtualizadoEm = new DateTime(2026, 5, 23, 19, 0, 0),
+                        Status = StatusPedido.Finalizado,
+                        UsuarioId = 2,
+                        Total = 30.00m,
+                        Itens = new List<ItemPedido>
+                        {
+                            new ItemPedido
+                            {
+                                ProdutoId = 18,
+                                Quantidade = 2,
+                                PrecoUnitario = 15.00m,
+                                Status = StatusPreparo.Pronto
+                            }
+                        }
+                    },
+                };
+
+                context.Set<Pedido>().AddRange(pedidos);
             }
 
             // salva no banco

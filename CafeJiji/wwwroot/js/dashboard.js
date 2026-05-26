@@ -10,7 +10,7 @@ async function carregarDashboard() {
 
         // 1. Atualiza Card 1: Faturamento Mensal
         const sinalCrescimento = dados.percentualCrescimento >= 0 ? "+" : "";
-        document.querySelector(".text-success").innerHTML = `R$ ${dados.faturamentoMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+        document.getElementById("cardFaturamentoMensal").innerHTML = `R$ ${dados.faturamentoMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
         // Atualiza a legenda do subtexto do crescimento
         document.getElementById("subtextoFaturamento").innerHTML = `✨ ${sinalCrescimento}${dados.percentualCrescimento}% em relação ao mês anterior`;
 

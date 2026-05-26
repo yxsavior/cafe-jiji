@@ -297,12 +297,8 @@ async function buscarGatosEIniciarContador() {
     }
 
     const gatos = await response.json();
-
-    // Filtra a lista contando quantos possuem o status de Adotado (Enum valor 2)
-    // Nota: O .NET costuma converter Enums para número no JSON. Se o seu retornar string, mude para: g.status === 'Adotado'
     const totalAdotados = gatos.filter(g => g.status === 2 || g.status === 'Adotado').length;
 
-    // Dispara a animação usando o valor real retornado do banco
     animateCounter("counter", totalAdotados, 2000);
 
   } catch (error) {
