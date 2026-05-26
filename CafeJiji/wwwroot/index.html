@@ -268,6 +268,13 @@
 function animateCounter(id, target, duration) {
   const el = document.getElementById(id);
   let start = 0;
+  
+  // Evita divisão por zero se o target for 0
+  if (target === 0) {
+    el.textContent = 0;
+    return;
+  }
+
   const stepTime = Math.max(Math.floor(duration / target), 10);
 
   const timer = setInterval(() => {
@@ -280,8 +287,33 @@ function animateCounter(id, target, duration) {
   }, stepTime);
 }
 
-// inicia quando carrega a página
-animateCounter("counter", 89, 3000);
+async function buscarGatosEIniciarContador() {
+  try {
+    // Busca todos os gatinhos cadastrados na API
+    const response = await fetch('http://localhost:5120/api/gatos');
+    
+    if (!response.ok) {
+      throw new Error("Erro ao obter dados do servidor");
+    }
+
+    const gatos = await response.json();
+
+    // Filtra a lista contando quantos possuem o status de Adotado (Enum valor 2)
+    // Nota: O .NET costuma converter Enums para número no JSON. Se o seu retornar string, mude para: g.status === 'Adotado'
+    const totalAdotados = gatos.filter(g => g.status === 2 || g.status === 'Adotado').length;
+
+    // Dispara a animação usando o valor real retornado do banco
+    animateCounter("counter", totalAdotados, 2000);
+
+  } catch (error) {
+    console.error("Não foi possível carregar o contador real:", error);
+    // Fallback: se a API falhar, exibe um valor fixo padrão para a página não ficar vazia
+    animateCounter("counter", 16, 1000); 
+  }
+}
+
+// Inicia a busca automática assim que a página termina de carregar
+window.addEventListener('DOMContentLoaded', buscarGatosEIniciarContador);
 </script>
 
 <!-- <section class="parallax-js">

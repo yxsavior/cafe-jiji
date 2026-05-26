@@ -156,9 +156,29 @@ namespace CafeJiji.Data
             if (!context.Set<Gato>().Any())
             {
                 context.Set<Gato>().AddRange(
-                    new Gato { Nome = "Mingau", Status = StatusGato.Disponivel, DataChegada = new DateOnly(2026, 4, 10), FotoUrl = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=500" },
-                    new Gato { Nome = "Frajola", Status = StatusGato.Disponivel, DataChegada = new DateOnly(2026, 5, 01), FotoUrl = "https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=500" },
-                    new Gato { Nome = "Paçoca", Status = StatusGato.Reservado, DataChegada = new DateOnly(2026, 3, 15), FotoUrl = "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?q=80&w=500" }
+                    // === 16 GATINHOS ADOTADOS (Sucessos do Café Jiji) ===
+                    new Gato { Nome = "Mingau", Status = StatusGato.Adotado, DataChegada = new DateOnly(2025, 10, 12), FotoUrl = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=500" },
+                    new Gato { Nome = "Frajola", Status = StatusGato.Adotado, DataChegada = new DateOnly(2025, 11, 05), FotoUrl = "https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=500" },
+                    new Gato { Nome = "Luna", Status = StatusGato.Adotado, DataChegada = new DateOnly(2025, 11, 20), FotoUrl = "https://images.unsplash.com/photo-1495360010541-f48722b34f7d?q=80&w=500" },
+                    new Gato { Nome = "Simba", Status = StatusGato.Adotado, DataChegada = new DateOnly(2025, 12, 01), FotoUrl = "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?q=80&w=500" },
+                    new Gato { Nome = "Mel", Status = StatusGato.Adotado, DataChegada = new DateOnly(2025, 12, 15), FotoUrl = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=500" },
+                    new Gato { Nome = "Oliver", Status = StatusGato.Adotado, DataChegada = new DateOnly(2026, 01, 10), FotoUrl = "https://images.unsplash.com/photo-1536590158209-e9d615d525e4?q=80&w=500" },
+                    new Gato { Nome = "Mia", Status = StatusGato.Adotado, DataChegada = new DateOnly(2026, 01, 22), FotoUrl = "https://images.unsplash.com/photo-1561948955-570b270e7c36?q=80&w=500" },
+                    new Gato { Nome = "Tom", Status = StatusGato.Adotado, DataChegada = new DateOnly(2026, 02, 02), FotoUrl = "https://images.unsplash.com/photo-1526336028067-849a161d56a1?q=80&w=500" },
+                    new Gato { Nome = "Garfield", Status = StatusGato.Adotado, DataChegada = new DateOnly(2026, 02, 15), FotoUrl = "https://images.unsplash.com/photo-1513360356757-782b606f5847?q=80&w=500" },
+                    new Gato { Nome = "Nala", Status = StatusGato.Adotado, DataChegada = new DateOnly(2026, 03, 01), FotoUrl = "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?q=80&w=500" },
+                    new Gato { Nome = "Chico", Status = StatusGato.Adotado, DataChegada = new DateOnly(2026, 03, 12), FotoUrl = "https://images.unsplash.com/photo-1574158622643-69d34d72650a?q=80&w=500" },
+                    new Gato { Nome = "Bolinha", Status = StatusGato.Adotado, DataChegada = new DateOnly(2026, 03, 28), FotoUrl = "https://images.unsplash.com/photo-1533743983669-94fa5c4338ec?q=80&w=500" },
+                    new Gato { Nome = "Cacau", Status = StatusGato.Adotado, DataChegada = new DateOnly(2026, 04, 05), FotoUrl = "https://images.unsplash.com/photo-1511044568932-338cba0ad80d?q=80&w=500" },
+                    new Gato { Nome = "Pipoca", Status = StatusGato.Adotado, DataChegada = new DateOnly(2026, 04, 18), FotoUrl = "https://images.unsplash.com/photo-1548247416-ec66f4900b2e?q=80&w=500" },
+                    new Gato { Nome = "Frederico", Status = StatusGato.Adotado, DataChegada = new DateOnly(2026, 05, 02), FotoUrl = "https://images.unsplash.com/photo-1555685812-4b943f1cb0eb?q=80&w=500" },
+                    new Gato { Nome = "Amora", Status = StatusGato.Adotado, DataChegada = new DateOnly(2026, 05, 10), FotoUrl = "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=500" },
+
+                    // === 4 GATINHOS ATUAIS NO GATIL (Disponíveis e Reservados) ===
+                    new Gato { Nome = "Paçoca", Status = StatusGato.Reservado, DataChegada = new DateOnly(2026, 05, 15), FotoUrl = "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?q=80&w=500" },
+                    new Gato { Nome = "Pretinho", Status = StatusGato.Reservado, DataChegada = new DateOnly(2026, 05, 18), FotoUrl = "https://images.unsplash.com/photo-1520315342629-6ea920342047?q=80&w=500" },
+                    new Gato { Nome = "Cookie", Status = StatusGato.Disponivel, DataChegada = new DateOnly(2026, 05, 20), FotoUrl = "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=500" },
+                    new Gato { Nome = "Fumaça", Status = StatusGato.Disponivel, DataChegada = new DateOnly(2026, 05, 24), FotoUrl = "https://images.unsplash.com/photo-1472491235688-bdc81a63246e?q=80&w=500" }
                 );
             }
 
