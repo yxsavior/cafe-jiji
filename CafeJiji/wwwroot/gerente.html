@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Painel do Gerente - Café Jiji</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --jiji-brown: #5d4037;
             --jiji-light: #faf8f5;
-            --jiji-accent: #fcd34d;
+            --jiji-accent: #cec4ca;
         }
         body {
             background-color: var(--jiji-light);
@@ -17,7 +19,13 @@
         .sidebar {
             background: white;
             box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            min-height: 100vh;
+        }
+        @media (min-width: 992px) {
+            .sidebar {
+                min-height: 100vh;
+                position: sticky;
+                top: 0;
+            }
         }
         .nav-pills .nav-link {
             color: #4b5563;
@@ -70,7 +78,6 @@
 <body>
 
 <script>
-    // Validação de Perfil baseada no seu AuthController/Seeder (Gerente)
     const role = localStorage.getItem("role");
     if (!role || role.toLowerCase() !== "gerente") {
         window.location.replace("index.html");
@@ -80,88 +87,108 @@
 <div class="container-fluid">
     <div class="row">
 
-        <aside class="col-md-2 p-4 sidebar d-flex flex-column justify-content-between position-sticky top-0 h-100">
-            <div>
-                <div class="text-center mb-4">
-                    <img src="images/logo.png" alt="Logo" class="img-fluid mb-2" style="max-height: 50px;" onerror="this.style.display='none'">
-                    <h5 class="fw-bold text-dark mb-0">☕ Café Jiji</h5>
-                    <span class="badge bg-light text-muted border mt-1">Gerência</span>
+        <aside class="col-12 col-lg-2 p-0 sidebar">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white align-items-start flex-lg-column h-100 p-3 p-lg-4">
+                <div class="container-fluid flex-lg-column align-items-stretch p-0">
+                    
+                    <div class="d-flex flex-row flex-lg-column align-items-center justify-content-between w-100 mb-0 mb-lg-4">
+                        <div class="text-center text-lg-center d-flex d-lg-block align-items-center gap-2">
+                            <img src="images/logo.png" alt="Logo" class="img-fluid mb-lg-2" style="max-height: 40px;" onerror="this.style.display='none'">
+                            <div>
+                                <h5 class="fw-bold text-dark mb-0">Café Jiji</h5>
+                                <span class="badge bg-light text-muted border mt-lg-1">Gerência</span>
+                            </div>
+                        </div>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                    <hr class="text-muted d-none d-lg-block mb-4">
+
+                    <div class="collapse navbar-collapse flex-column align-items-stretch w-100 mt-3 mt-lg-0" id="sidebarMenu">
+                        <ul class="nav nav-pills flex-column mb-auto" id="menuTabs" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link w-100 text-start active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                                    📊 Visão Geral
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link w-100 text-start" id="produtos-tab" data-bs-toggle="tab" data-bs-target="#produtos" type="button" role="tab" onclick="carregarProdutos()">
+                                    📦 Cardápio e Produtos
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link w-100 text-start" id="insumos-tab" data-bs-toggle="tab" data-bs-target="#insumos" type="button" role="tab" onclick="carregarInsumos()">
+                                    🌾 Gestão de Insumos
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="d-grid gap-2 mt-4 mt-lg-5 pt-3 border-top border-lg-0">
+                            <a href="index.html" class="btn btn-outline-secondary btn-sm rounded-3">Ver Site</a>
+                            <a href="atendimento.html" class="btn btn-outline-secondary btn-sm rounded-3">Atendimentos</a>
+                            <a href="cozinha.html" class="btn btn-outline-secondary btn-sm rounded-3">Cozinha</a>
+                            <button class="btn btn-outline-danger btn-sm rounded-3" onclick="logout()">Sair do Painel</button>
+                        </div>
+                    </div>
+
                 </div>
-                
-                <hr class="text-muted mb-4">
-
-                <ul class="nav nav-pills flex-column" id="menuTabs" role="tablist">
-                    <li class="nav-item">
-                        <button class="nav-link w-100 text-start active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
-                            📊 Dashboard
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link w-100 text-start" id="produtos-tab" data-bs-toggle="tab" data-bs-target="#produtos" type="button" role="tab">
-                            📦 Produtos
-                        </button>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="d-grid gap-2 mt-5">
-                <a href="index.html" class="btn btn-outline-secondary btn-sm rounded-3">🌐 Ver Site</a>
-                <button class="btn btn-outline-danger btn-sm rounded-3" onclick="logout()">Sair do Painel</button>
-            </div>
+            </nav>
         </aside>
 
-        <main class="col-md-10 p-5 tab-content">
+        <main class="col-12 col-lg-10 p-3 p-md-5 tab-content">
             <div id="alertBox" class="alert alert-dismissible d-none shadow-sm" role="alert"></div>
 
             <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
                     <div>
-                        <h1 class="fw-bold text-dark mb-1">Visão Geral</h1>
-                        <p class="text-muted mb-0">Métricas de faturamento e desempenho em tempo real</p>
+                        <h1 class="fw-bold text-dark mb-1 fs-2">Visão Geral</h1>
+                        <p class="text-muted mb-0 small">Métricas de faturamento e desempenho em tempo real</p>
                     </div>
                     <button class="btn btn-outline-dark d-flex align-items-center gap-2" onclick="gerarPDF()">
                         📄 Exportar Relatório (PDF)
                     </button>
                 </div>
 
-                <div class="row g-4 mb-5">
-                    <div class="col-md-4">
+                <div class="row g-3 g-md-4 mb-5">
+                    <div class="col-12 col-md-4">
                         <div class="card jiji-card p-4">
                             <span class="text-muted small fw-bold text-uppercase">Faturamento Mensal</span>
-                            <h2 class="fw-bold text-success mt-2 mb-1">R$ 14.850,00</h2>
+                            <h2 class="fw-bold text-success mt-2 mb-1 fs-3">R$ 14.850,00</h2>
                             <span class="text-muted small">✨ +12% em relação ao mês anterior</span>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-4">
                         <div class="card jiji-card p-4">
                             <span class="text-muted small fw-bold text-uppercase">Pedidos Concluídos</span>
-                            <h2 class="fw-bold text-dark mt-2 mb-1">342</h2>
+                            <h2 class="fw-bold text-dark mt-2 mb-1 fs-3">342</h2>
                             <span class="text-muted small">☕ Média de 11 clientes diários</span>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-4">
                         <div class="card jiji-card p-4">
                             <span class="text-muted small fw-bold text-uppercase">Taxas do Gatil</span>
-                            <h2 class="fw-bold text-primary mt-2 mb-1">R$ 2.450,00</h2>
-                            <span class="text-muted small">🐈 163 visitas agendadas</span>
+                            <h2 class="fw-bold text-primary mt-2 mb-1 fs-3">R$ 2.450,00</h2>
+                            <span class="text-muted small">🐈 163 visits agendadas</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="row g-4">
-                    <div class="col-lg-8">
+                    <div class="col-12 col-xl-8">
                         <div class="card jiji-card p-4 h-100">
                             <h5 class="fw-bold mb-4">Curva de Faturamento Semanal</h5>
-                            <div class="bg-light rounded-4 d-flex align-items-center justify-content-center text-muted" style="height: 300px; border: 2px dashed #e5e7eb;">
-                                📈 [Espaço reservado para o Gráfico de Linhas / Chart.js]
+                            <div style="position: relative; height:300px; width:100%;">
+                                <canvas id="graficoFaturamento"></canvas>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
+                    <div class="col-12 col-xl-4">
                         <div class="card jiji-card p-4 h-100">
                             <h5 class="fw-bold mb-4">Categorias Mais Vendidas</h5>
-                            <div class="bg-light rounded-4 d-flex align-items-center justify-content-center text-muted" style="height: 300px; border: 2px dashed #e5e7eb;">
-                                🍩 [Espaço reservado para o Gráfico de Pizza]
+                            <div style="position: relative; height:300px; width:100%;" class="d-flex justify-content-center">
+                                <canvas id="graficoCategorias"></canvas>
                             </div>
                         </div>
                     </div>
@@ -170,8 +197,8 @@
 
             <div class="tab-pane fade" id="produtos" role="tabpanel">
                 <div class="mb-4">
-                    <h1 class="fw-bold text-dark mb-1">Gestão do Cardápio</h1>
-                    <p class="text-muted mb-0">Adicione, edite ou remova os produtos do seu menu</p>
+                    <h1 class="fw-bold text-dark mb-1 fs-2">Gestão do Cardápio</h1>
+                    <p class="text-muted mb-0 small">Adicione, edite ou remova os produtos do seu menu</p>
                 </div>
 
                 <div class="card jiji-card mb-5">
@@ -180,17 +207,17 @@
                         <form id="produtoForm" class="row g-3">
                             <input type="hidden" id="produtoId">
                             
-                            <div class="col-md-4">
+                            <div class="col-12 col-md-4">
                                 <label class="form-label fw-bold small text-muted">Nome do Produto</label>
                                 <input type="text" class="form-control" id="nome" placeholder="Ex: Capuccino Gateiro" required>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-12 col-md-3">
                                 <label class="form-label fw-bold small text-muted">Preço (R$)</label>
                                 <input type="number" step="0.01" class="form-control" id="preco" placeholder="12.50" required>
                             </div>
 
-                            <div class="col-md-5">
+                            <div class="col-12 col-md-5">
                                 <label class="form-label fw-bold small text-muted">Categoria</label>
                                 <select class="form-select" id="categoria" required>
                                     <option value="Cafés">Cafés</option>
@@ -200,12 +227,12 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label fw-bold small text-muted">Quantidade Inicial em Estoque</label>
                                 <input type="number" class="form-control" id="quantidadeEstoque" placeholder="99" required>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label fw-bold small text-muted">Estoque Mínimo Alerta</label>
                                 <input type="number" class="form-control" id="estoqueMinimo" placeholder="5" required>
                             </div>
@@ -219,26 +246,90 @@
                 </div>
 
                 <hr class="text-muted my-5">
-
-                <h3 class="fw-bold text-dark mb-4">Produtos Ativos</h3>
-                <div id="listaProdutos" class="row row-cols-1 row-cols-md-3 g-4">
-                    </div>
+                <h3 class="fw-bold text-dark mb-4 fs-4">Produtos Ativos</h3>
+                <div id="listaProdutos" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4"></div>
             </div>
-        </main>
 
+            <div class="tab-pane fade" id="insumos" role="tabpanel">
+                <div class="mb-4">
+                    <h1 class="fw-bold text-dark mb-1 fs-2">Controle de Insumos e Matéria-Prima</h1>
+                    <p class="text-muted mb-0 small">Gerencie fardos de leite, pó de café e itens de cozinha em estoque bruto</p>
+                </div>
+
+                <div class="card jiji-card mb-5">
+                    <div class="card-body p-4">
+                        <h5 id="insumoFormTitle" class="fw-bold text-dark mb-4">🌾 Cadastrar Novo Insumo</h5>
+                        <form id="insumoForm" class="row g-3">
+                            <input type="hidden" id="insumoId">
+                            
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small text-muted">Nome do Insumo</label>
+                                <input type="text" class="form-control" id="insumoNome" placeholder="Ex: Café em Grãos Blend (1kg)" required>
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-bold small text-muted">Quantidade Atual</label>
+                                <input type="number" class="form-control" id="insumoQuantidade" placeholder="10" required>
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-bold small text-muted">Estoque Mínimo (Alerta)</label>
+                                <input type="number" class="form-control" id="insumoMinimo" placeholder="2" required>
+                            </div>
+
+                            <div class="col-12 d-flex gap-2 pt-2">
+                                <button type="submit" class="btn btn-jiji px-4">Salvar Insumo</button>
+                                <button type="button" class="btn btn-light px-4 border" onclick="resetarInsumoForm()">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <hr class="text-muted my-5">
+                <h3 class="fw-bold text-dark mb-4 fs-4">Almoxarifado / Matérias-Primas</h3>
+                <div class="card jiji-card p-3 p-md-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Insumo</th>
+                                    <th>Qtd. Atual</th>
+                                    <th>Qtd. Mínima</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaInsumosBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-const API_URL = "http://localhost:5120/api/produtos"; // Corrigido para HTTP conforme análise anterior
+const API_BASE = "http://localhost:5120/api";
+const API_URL = `${API_BASE}/produtos`;
+const API_INSUMOS = `${API_BASE}/insumos`;
 
 function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+    localStorage.clear();
     window.location.replace("index.html");
+}
+
+function getHeaders() {
+    const token = localStorage.getItem("token");
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+    };
 }
 
 function showAlert(message, type = "success") {
@@ -249,19 +340,13 @@ function showAlert(message, type = "success") {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// ==========================================
+// SEÇÃO: PRODUTOS & CARDÁPIO
+// ==========================================
 function resetarForm() {
     document.getElementById("produtoForm").reset();
     document.getElementById("produtoId").value = "";
     document.getElementById("formTitle").innerText = "✨ Criar Novo Produto";
-}
-
-// Configuração de cabeçalhos com Token JWT de Autenticação
-function getHeaders() {
-    const token = localStorage.getItem("token");
-    return {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-    };
 }
 
 async function carregarProdutos() {
@@ -280,10 +365,10 @@ async function carregarProdutos() {
                 <div class="card h-100 jiji-card jiji-card-hover p-2">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="fw-bold text-dark mb-0">${p.nome}</h5>
+                            <h5 class="fw-bold text-dark mb-0 fs-6">${p.nome}</h5>
                             <span class="badge bg-warning text-dark small">R$ ${p.preco.toFixed(2)}</span>
                         </div>
-                        <p class="text-muted small mb-1"><b>Categoria:</b> ${p.categoria}</p>
+                        <p class="text-muted small mb-1"><b>Categoria:</b> <span class="badge bg-light text-dark border">${p.categoria}</span></p>
                         <p class="text-muted small mb-3"><b>Estoque:</b> ${p.quantidadeEstoque} un (Mín: ${p.estoqueMinimo})</p>
                         
                         <div class="mt-auto pt-2 border-top d-flex gap-2">
@@ -300,46 +385,27 @@ async function carregarProdutos() {
     }
 }
 
-async function deletarProduto(id, nome) {
-    if (!confirm(`Deseja mesmo remover do cardápio o item "${nome}"?`)) return;
-
-    try {
-        const response = await fetch(`${API_URL}/${id}`, {
-            method: "DELETE",
-            headers: getHeaders()
-        });
-
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            throw new Error(errData.mensagem || "Erro na exclusão.");
-        }
-
-        showAlert(`Produto "${nome}" removido!`);
-        carregarProdutos();
-    } catch (err) {
-        showAlert(err.message, "danger");
-    }
-}
-
 function prepararEdicao(id, nome, preco, categoria, estoque, minimo) {
     document.getElementById("produtoId").value = id;
     document.getElementById("nome").value = nome;
     document.getElementById("preco").value = preco;
-    document.getElementById("categoria").value = categoria;
+    
+    if(categoria.toLowerCase() === "serviços") {
+        document.getElementById("categoria").value = "Serviços";
+    } else {
+        document.getElementById("categoria").value = categoria;
+    }
+    
     document.getElementById("quantidadeEstoque").value = estoque;
     document.getElementById("estoqueMinimo").value = minimo;
-    
     document.getElementById("formTitle").innerText = "📝 Editando Item #" + id;
     
-    // Altera para a aba do formulário de produtos automaticamente
-    const trigger = document.getElementById('produtos-tab');
-    bootstrap.Tab.getInstance(trigger).show();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Auto-focus no mobile
+    window.scrollTo({ top: document.getElementById("produtoForm").offsetTop - 20, behavior: 'smooth' });
 }
 
 document.getElementById("produtoForm").addEventListener("submit", async function(e) {
     e.preventDefault();
-
     const id = document.getElementById("produtoId").value;
     const produtoDto = {
         nome: document.getElementById("nome").value,
@@ -352,29 +418,15 @@ document.getElementById("produtoForm").addEventListener("submit", async function
     };
 
     try {
-        let response;
-        if (id) {
-            // Chamada PUT
-            response = await fetch(`${API_URL}/${id}`, {
-                method: "PUT",
-                headers: getHeaders(),
-                body: JSON.stringify(produtoDto)
-            });
-        } else {
-            // Chamada POST
-            response = await fetch(API_URL, {
-                method: "POST",
-                headers: getHeaders(),
-                body: JSON.stringify(produtoDto)
-            });
-        }
+        const urlFinal = id ? `${API_URL}/${id}` : API_URL;
+        const response = await fetch(urlFinal, {
+            method: id ? "PUT" : "POST",
+            headers: getHeaders(),
+            body: JSON.stringify(produtoDto)
+        });
 
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            throw new Error(errData.mensagem || "Não foi possível salvar os dados.");
-        }
-
-        showAlert(id ? "Cardápio atualizado com sucesso!" : "Novo produto inserido com sucesso!");
+        if (!response.ok) throw new Error("Não foi possível salvar o produto.");
+        showAlert(id ? "Cardápio atualizado!" : "Novo produto inserido!");
         resetarForm();
         carregarProdutos();
     } catch (err) {
@@ -382,21 +434,159 @@ document.getElementById("produtoForm").addEventListener("submit", async function
     }
 });
 
-// GERAÇÃO DE PDF DO RELATÓRIO DO DASHBOARD
+async function deletarProduto(id, nome) {
+    if (!confirm(`Deseja mesmo remover "${nome}"?`)) return;
+    try {
+        const response = await fetch(`${API_URL}/${id}`, { method: "DELETE", headers: getHeaders() });
+        if (!response.ok) throw new Error("Erro na exclusão.");
+        showAlert(`Produto "${nome}" removido!`);
+        carregarProdutos();
+    } catch (err) { showAlert(err.message, "danger"); }
+}
+
+// ==========================================
+// SEÇÃO: GERENCIAMENTO DE INSUMOS
+// ==========================================
+function resetarInsumoForm() {
+    document.getElementById("insumoForm").reset();
+    document.getElementById("insumoId").value = "";
+    document.getElementById("insumoFormTitle").innerText = "🌾 Cadastrar Novo Insumo";
+}
+
+async function carregarInsumos() {
+    try {
+        const response = await fetch(API_INSUMOS, { headers: getHeaders() });
+        if (!response.ok) throw new Error("Não foi possível carregar os insumos.");
+        
+        const insumos = await response.json();
+        const tbody = document.getElementById("tabelaInsumosBody");
+        tbody.innerHTML = "";
+
+        insumos.forEach(i => {
+            const estoqueCritico = i.quantidadeAtual <= i.estoqueMinimo;
+            const statusBadge = estoqueCritico 
+                ? `<span class="badge bg-danger">🚨 Baixo</span>` 
+                : `<span class="badge bg-success">✅ OK</span>`;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>#${i.id}</strong></td>
+                <td><span class="fw-bold text-dark">${i.nome}</span></td>
+                <td><span class="fs-6 ${estoqueCritico ? 'text-danger fw-bold' : ''}">${i.quantidadeAtual}</span></td>
+                <td><span class="text-muted">${i.estoqueMinimo}</span></td>
+                <td>${statusBadge}</td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-outline-secondary me-1" onclick="prepararInsumoEdicao(${i.id}, '${i.nome}', ${i.quantidadeAtual}, ${i.estoqueMinimo})">✏️</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deletarInsumo(${i.id}, '${i.nome}')">🗑️</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (err) {
+        console.error("Erro Insumos:", err);
+    }
+}
+
+function prepararInsumoEdicao(id, nome, qtd, min) {
+    document.getElementById("insumoId").value = id;
+    document.getElementById("insumoNome").value = nome;
+    document.getElementById("insumoQuantidade").value = qtd;
+    document.getElementById("insumoMinimo").value = min;
+    document.getElementById("insumoFormTitle").innerText = "📝 Editando Insumo #" + id;
+    
+    window.scrollTo({ top: document.getElementById("insumoForm").offsetTop - 20, behavior: 'smooth' });
+}
+
+document.getElementById("insumoForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const id = document.getElementById("insumoId").value;
+    const insumoDto = {
+        nome: document.getElementById("insumoNome").value,
+        quantidadeAtual: parseInt(document.getElementById("insumoQuantidade").value),
+        estoqueMinimo: parseInt(document.getElementById("insumoMinimo").value)
+    };
+
+    try {
+        const urlFinal = id ? `${API_INSUMOS}/${id}` : API_INSUMOS;
+        const response = await fetch(urlFinal, {
+            method: id ? "PUT" : "POST",
+            headers: getHeaders(),
+            body: JSON.stringify(insumoDto)
+        });
+
+        if (!response.ok) throw new Error("Erro ao salvar dados do insumo.");
+        showAlert(id ? "Insumo atualizado com sucesso!" : "Insumo cadastrado!");
+        resetarInsumoForm();
+        carregarInsumos();
+    } catch (err) {
+        showAlert(err.message, "danger");
+    }
+});
+
+async function deletarInsumo(id, nome) {
+    if (!confirm(`Deseja deletar o insumo "${nome}" do Almoxarifado?`)) return;
+    try {
+        const response = await fetch(`${API_INSUMOS}/${id}`, { method: "DELETE", headers: getHeaders() });
+        if (!response.ok) throw new Error("Erro ao apagar insumo.");
+        showAlert(`Insumo "${nome}" removido do sistema.`);
+        carregarInsumos();
+    } catch (err) { showAlert(err.message, "danger"); }
+}
+
+// ==========================================
+// GRÁFICOS E PDF
+// ==========================================
 function gerarPDF() {
     const elemento = document.getElementById("dashboard");
     const opcoes = {
-        margin:       10,
-        filename:     'Relatorio_Faturamento_CafeJiji.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        margin: 10,
+        filename: 'Relatorio_Faturamento_CafeJiji.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
-    html2pdf().set(opces).from(elemento).save();
+    html2pdf().set(opcoes).from(elemento).save();
 }
 
-// Inicializa a tela baixando os produtos
-carregarProdutos();
+function inicializarGraficos() {
+    const ctxFaturamento = document.getElementById('graficoFaturamento').getContext('2d');
+    new Chart(ctxFaturamento, {
+        type: 'line',
+        data: {
+            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+            datasets: [{
+                label: 'Faturamento Diário (R$)',
+                data: [1200, 1900, 1500, 2100, 2800, 3500, 1850],
+                borderColor: '#5d4037',
+                backgroundColor: 'rgba(93, 64, 55, 0.1)',
+                borderWidth: 3,
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+
+    const ctxCategorias = document.getElementById('graficoCategorias').getContext('2d');
+    new Chart(ctxCategorias, {
+        type: 'doughnut',
+        data: {
+            labels: ['Cafés', 'Doces', 'Salgados', 'Gatil (Taxas)'],
+            datasets: [{
+                data: [45, 30, 15, 10],
+                backgroundColor: ['#5d4037', '#fcd34d', '#f87171', '#60a5fa'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+}
+
+window.onload = () => {
+    inicializarGraficos();
+    carregarProdutos();
+};
 </script>
 </body>
 </html>

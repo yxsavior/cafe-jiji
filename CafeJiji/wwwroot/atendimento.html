@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atendimento - Café Jiji</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f5f5f5; color: #3e2723; }
+        
+        /* Sidebar padrão para Computadores */
+        .sidebar { 
+            background-color: #3e2723; 
+            min-height: 100vh; 
+            color: white; 
+            position: fixed;
+            width: 240px;
+            z-index: 1000;
+        }
+        
+        /* Área do conteúdo ao lado da sidebar (PC) */
+        .conteudo-principal {
+            margin-left: 240px;
+            padding: 24px;
+            width: calc(100% - 240px);
+        }
+
+        .card-mesa { border-left: 5px solid #28a745; background: white; border-radius: 8px; }
+        .card-mesa.pendente { border-left-color: #ffc107; }
+        .tabela-carrinho { max-height: 200px; overflow-y: auto; }
+
+        /* 📱 RESPONSIVIDADE: Ajustes para Celulares e Tablets */
+        @media (max-width: 767.98px) {
+            .sidebar {
+                min-height: auto;
+                width: 100%;
+                position: relative;
+                padding: 12px 20px !important;
+            }
+            .conteudo-principal {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+            /* Oculta blocos desnecessários na barra mobile */
+            .info-usuario {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex flex-column flex-md-row">
+    
+    <div class="sidebar p-3 d-flex flex-row flex-md-column justify-content-between align-items-center align-items-md-stretch">
+        <h4 class="text-center fw-bold mb-0 mb-md-4">
+            <i class="fas fa-concierge-bell me-2"></i><span class="d-none d-sm-inline d-md-inline">Atendimento</span>
+        </h4>
+        
+        <hr class="d-none d-md-block text-white-50">
+        
+        <button type="button" class="btn btn-warning fw-bold px-3 py-2 px-md-2 my-0 my-md-2" data-bs-toggle="modal" data-bs-target="#modalAbrirComanda">
+            <i class="fas fa-plus me-1"></i> Nova Comanda
+        </button>
+        
+        <div class="mt-0 mt-md-auto info-usuario text-md-start text-end">
+            <small class="d-block text-white-50 small">Atendente</small>
+            <a href="#" class="text-warning text-decoration-none small fw-bold" onclick="logout()"><i class="fas fa-sign-out-alt me-1"></i>Sair</a>
+        </div>
+        
+        <a href="#" class="text-warning text-decoration-none d-block d-md-none fs-5 ms-3" onclick="logout()" title="Sair">
+            <i class="fas fa-sign-out-alt"></i>
+        </a>
+    </div>
+
+    <div class="conteudo-principal">
+        <h2 class="fw-bold mb-4 mt-2 mt-md-0 fs-3 text-center text-md-start">Mesas Ativas</h2>
+        <div class="row g-3" id="gridComandas"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAbrirComanda" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Abrir Nova Comanda</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Número da Mesa</label>
+                    <input type="number" id="novaMesaInput" class="form-control form-control-lg text-center" placeholder="Ex: 5" inputmode="numeric">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="salvarNovaComanda()">Abrir Mesa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalLancamento" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold">🛒 Montar Pedido - Mesa <span id="lblMesaSelecionada"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="pedidoIdSelecionado">
+                
+                <div class="row g-2 align-items-end mb-4 bg-light p-2 p-md-3 rounded border">
+                    <div class="col-12 col-md-7">
+                        <label class="form-label fw-bold small text-muted">Produto</label>
+                        <select id="selectProdutos" class="form-select form-select-lg text-dark"></select>
+                    </div>
+                    <div class="col-8 col-md-3">
+                        <label class="form-label fw-bold small text-muted">Quantidade</label>
+                        <input type="number" id="qtdProduto" class="form-control form-control-lg text-center" value="1" min="1">
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <button type="button" class="btn btn-warning btn-lg w-100 fw-bold" onclick="adicionarAoCarrinhoTemporario()">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-2"><i class="fas fa-list-ul me-1"></i> Itens do Pedido atual:</h6>
+                <div class="table-responsive border rounded tabela-carrinho mb-3">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-secondary sticky-top">
+                            <tr>
+                                <th>Produto</th>
+                                <th class="text-center">Qtd</th>
+                                <th class="text-end">Remover</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyCarrinho"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
+                <button type="button" id="btnEnviarLote" class="btn btn-success fw-bold px-4 py-2" onclick="enviarPedidoLoteFinal()" disabled>
+                    <i class="fas fa-paper-plane me-1"></i> Lançar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const API_URL = "http://localhost:5120/api";
+    const token = localStorage.getItem("token_jiji") || localStorage.getItem("token");
+    let carrinhoTemporario = []; 
+
+    function getHeaders() {
+        return { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+    }
+
+    async function carregarComandasAtivas() {
+        try {
+            const res = await fetch(`${API_URL}/pedidos/ativos`, { headers: getHeaders() });
+            if(!res.ok) return;
+            const pedidos = await res.json();
+            
+            const grid = document.getElementById("gridComandas");
+            grid.innerHTML = "";
+
+            pedidos.forEach(p => {
+                const temPendente = p.itensPendentes > 0;
+                grid.innerHTML += `
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4">
+                        <div class="card card-mesa ${temPendente ? 'pendente' : ''} p-3 shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="fw-bold mb-0">Mesa ${p.numeroMesa}</h5>
+                                <span class="badge ${temPendente ? 'bg-warning text-dark' : 'bg-success'}">
+                                    ${temPendente ? `${p.itensPendentes} Preparando` : 'Pronto'}
+                                </span>
+                            </div>
+                            <p class="mb-1 text-muted small">Total acumulado:</p>
+                            <h4 class="text-dark fw-bold mb-3">R$ ${p.total.toFixed(2)}</h4>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-dark flex-grow-1 py-2 fw-bold" onclick="abrirModalLancamento(${p.id}, ${p.numeroMesa})">
+                                    <i class="fas fa-cart-plus me-1"></i> Lançar
+                                </button>
+                                <button class="btn btn-sm btn-success px-3" onclick="fecharComanda(${p.id})" title="Fechar Comanda">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        } catch(e) { console.error(e); }
+    }
+
+    async function salvarNovaComanda() {
+        const mesa = document.getElementById("novaMesaInput").value;
+        if(!mesa) return alert("Digite o número da mesa!");
+
+        const res = await fetch(`${API_URL}/pedidos`, {
+            method: "POST",
+            headers: getHeaders(),
+            body: JSON.stringify({ numeroMesa: parseInt(mesa) })
+        });
+
+        if(res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('modalAbrirComanda')).hide();
+            document.getElementById("novaMesaInput").value = "";
+            carregarComandasAtivas();
+        } else {
+            const err = await res.json();
+            alert(err.mensagem || "Erro ao abrir comanda.");
+        }
+    }
+
+    async function abrirModalLancamento(id, numeroMesa) {
+        document.getElementById("pedidoIdSelecionado").value = id;
+        document.getElementById("lblMesaSelecionada").innerText = numeroMesa;
+        carrinhoTemporario = [];
+        atualizarTabelaModal();
+
+        const res = await fetch(`${API_URL}/produtos`);
+        const produtos = await res.json();
+        
+        const select = document.getElementById("selectProdutos");
+        select.innerHTML = "";
+        produtos.forEach(prod => {
+            select.innerHTML += `<option value="${prod.id}" data-nome="${prod.nome}">${prod.nome} - R$ ${prod.preco.toFixed(2)}</option>`;
+        });
+
+        new bootstrap.Modal(document.getElementById('modalLancamento')).show();
+    }
+
+    function adicionarAoCarrinhoTemporario() {
+        const select = document.getElementById("selectProdutos");
+        const produtoId = parseInt(select.value);
+        const nomeProduto = select.options[select.selectedIndex].getAttribute("data-nome");
+        const quantidade = parseInt(document.getElementById("qtdProduto").value);
+
+        if (quantidade <= 0 || isNaN(quantidade)) return alert("Defina uma quantidade válida!");
+
+        const itemExistente = carrinhoTemporario.find(item => item.produtoId === produtoId);
+        if (itemExistente) {
+            itemExistente.quantidade += quantidade;
+        } else {
+            carrinhoTemporario.push({ produtoId, nomeProduto, quantidade });
+        }
+
+        document.getElementById("qtdProduto").value = "1";
+        atualizarTabelaModal();
+    }
+
+    function removerDoCarrinhoTemporario(index) {
+        carrinhoTemporario.splice(index, 1);
+        atualizarTabelaModal();
+    }
+
+    /* Corrigido o nome de 'actualizarTabelaModal' para 'atualizarTabelaModal' conforme as chamadas */
+    function atualizarTabelaModal() {
+        const tbody = document.getElementById("tbodyCarrinho");
+        const btnEnviar = document.getElementById("btnEnviarLote");
+        tbody.innerHTML = "";
+
+        if (carrinhoTemporario.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-3">Lista vazia. Adicione itens acima.</td></tr>`;
+            btnEnviar.disabled = true;
+            return;
+        }
+
+        carrinhoTemporario.forEach((item, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td class="fw-bold text-dark text-truncate" style="max-width: 150px;">${item.nomeProduto}</td>
+                    <td class="text-center"><span class="badge bg-secondary px-2 py-1">${item.quantidade}</span></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm text-danger border-0" onclick="removerDoCarrinhoTemporario(${index})">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        btnEnviar.disabled = false;
+    }
+
+    async function enviarPedidoLoteFinal() {
+        const pedidoId = document.getElementById("pedidoIdSelecionado").value;
+        const payload = {
+            itens: carrinhoTemporario.map(item => ({
+                produtoId: item.produtoId,
+                quantidade: item.quantidade
+            }))
+        };
+
+        const res = await fetch(`${API_URL}/pedidos/${pedidoId}/itens/lote`, {
+            method: "POST",
+            headers: getHeaders(),
+            body: JSON.stringify(payload)
+        });
+
+        if(res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('modalLancamento')).hide();
+            carregarComandasAtivas();
+        } else {
+            const err = await res.json();
+            alert(err.mensagem || "Erro ao enviar pedido.");
+        }
+    }
+
+    async function fecharComanda(id) {
+        if(!confirm("Deseja fechar a conta desta mesa?")) return;
+
+        const res = await fetch(`${API_URL}/pedidos/${id}/finalizar`, {
+            method: "PUT",
+            headers: getHeaders()
+        });
+
+        if(res.ok) {
+            carregarComandasAtivas();
+        } else {
+            const err = await res.json();
+            alert(err.mensagem || "Erro ao fechar comanda.");
+        }
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = "login.html";
+    }
+
+    window.onload = () => {
+        if(!token) window.location.href = "login.html";
+        carregarComandasAtivas();
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozinha - Café Jiji</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f5f5f5; color: #3e2723; }
+        .sidebar { background-color: #3e2723; min-height: 100vh; color: white; position: fixed; width: 240px; z-index: 1000; }
+        .conteudo-principal { margin-left: 240px; padding: 24px; width: calc(100% - 240px); }
+        .card-pedido { background: white; border-radius: 12px; border-top: 6px solid #ffc107; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .item-cozinha { padding: 8px 0; border-bottom: 1px dashed #e0e0e0; }
+        .item-cozinha:last-child { border-bottom: none; }
+
+        @media (max-width: 767.98px) {
+            .sidebar { min-height: auto; width: 100%; position: relative; padding: 12px 20px !important; }
+            .conteudo-principal { margin-left: 0; width: 100%; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex flex-column flex-md-row">
+    <div class="sidebar p-3 d-flex flex-row flex-md-column justify-content-between align-items-center align-items-md-stretch">
+        <h4 class="text-center fw-bold mb-0 mb-md-4">
+            <i class="fas fa-coffee me-2" style="color: #eeeeee;"></i><span>Cozinha</span>
+        </h4>
+        
+        <button type="button" class="btn btn-outline-light fw-bold my-0 my-md-2" onclick="carregarPedidosCozinha()">
+            <i class="fas fa-sync-alt me-1"></i> Atualizar
+        </button>
+        
+        <div class="mt-0 mt-md-auto info-usuario text-md-start text-end">
+            <small class="d-block text-white-50 small">Barista / Cozinha</small>
+            <a href="#" class="text-warning text-decoration-none small fw-bold" onclick="logout()"><i class="fas fa-sign-out-alt me-1"></i>Sair</a>
+        </div>
+    </div>
+
+    <div class="conteudo-principal">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold fs-3 mb-0">Painel de Preparo (Pendentes)</h2>
+        </div>
+
+        <div class="row g-3" id="gridPendentes">
+            <div class="col-12 text-center text-muted py-5">
+                <div class="spinner-border text-warning" role="status"></div>
+                <p class="mt-2">Buscando pedidos na API do Café Jiji...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Rota base correta mapeada para o seu Route("api/pedidos")
+    const API_URL = "http://localhost:5120/api/pedidos";
+    const token = localStorage.getItem("token_jiji") || localStorage.getItem("token");
+
+    function getHeaders() {
+        return { 
+            "Content-Type": "application/json", 
+            "Authorization": `Bearer ${token}` 
+        };
+    }
+
+    // Busca os dados direto no seu endpoint [HttpGet("cozinha")]
+    async function carregarPedidosCozinha() {
+        try {
+            const res = await fetch(`${API_URL}/cozinha`, { method: "GET", headers: getHeaders() });
+            
+            if (!res.ok) {
+                if (res.status === 403) {
+                    document.getElementById("gridPendentes").innerHTML = `
+                        <div class="alert alert-danger w-100 text-center">
+                            <strong>Erro 403 (Acesso Negado):</strong> Seu usuário não possui a permissão necessária no Back-end.<br>
+                            <small>Certifique-se de que a role cadastrada no banco é exatamente "Cozinha", "Atendente" ou "Gerente".</small>
+                        </div>`;
+                } else {
+                    document.getElementById("gridPendentes").innerHTML = `<div class="alert alert-danger w-100 text-center">Erro ao buscar dados do servidor (Status: ${res.status}).</div>`;
+                }
+                return;
+            }
+
+            const mesas = await res.json();
+            const grid = document.getElementById("gridPendentes");
+            grid.innerHTML = "";
+
+            if (mesas.length === 0) {
+                grid.innerHTML = `<div class="col-12 text-center text-muted py-5 fs-5">🎉 Tudo limpo! Nenhum pedido pendente na cozinha.</div>`;
+                return;
+            }
+
+            mesas.forEach(m => {
+                let itensHtml = "";
+                
+                m.itens.forEach(item => {
+                    itensHtml += `
+                        <div class="item-cozinha d-flex justify-content-between align-items-center py-2">
+                            <div>
+                                <span class="fw-bold fs-5 text-dark">🔹 ${item.nomeProduto}</span>
+                                <span class="badge bg-dark fs-6 ms-2">x${item.quantidade}</span>
+                            </div>
+                            <button class="btn btn-sm btn-success rounded-circle" title="Marcar como pronto" onclick="marcarItemPronto(${item.id})">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+
+                let horaFormatada = "";
+                if(m.itens[0] && m.itens[0].horarioPedido) {
+                    horaFormatada = new Date(m.itens[0].horarioPedido).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                }
+
+                grid.innerHTML += `
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card-pedido p-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+                                <h4 class="fw-bold mb-0 text-danger">Mesa ${m.numeroMesa}</h4>
+                                <small class="text-muted"><i class="far fa-clock me-1"></i>${horaFormatada}</small>
+                            </div>
+                            <div class="py-2">
+                                ${itensHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+        } catch (error) {
+            console.error("Erro na requisição:", error);
+            document.getElementById("gridPendentes").innerHTML = `<div class="alert alert-danger w-100 text-center">Não foi possível conectar ao servidor. O Back-end está ligado?</div>`;
+        }
+    }
+
+    // Executa o seu endpoint [HttpPut("itens/{idItem}/status")]
+    async function marcarItemPronto(idItem) {
+        try {
+            const res = await fetch(`${API_URL}/itens/${idItem}/status`, {
+                method: "PUT",
+                headers: getHeaders()
+            });
+
+            if (res.ok) {
+                carregarPedidosCozinha(); // Recarrega a lista atualizada
+            } else {
+                const erro = await res.json().catch(() => ({}));
+                alert("Erro ao atualizar status: " + (erro.mensagem || "Erro desconhecido"));
+            }
+        } catch (error) {
+            alert("Não foi possível se conectar ao servidor.");
+        }
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = "login.html";
+    }
+
+    window.onload = () => {
+        if (!token) {
+            window.location.href = "login.html";
+            return;
+        }
+        carregarPedidosCozinha();
+        setInterval(carregarPedidosCozinha, 15000); // Polling a cada 15 segundos
+    };
+</script>
+</body>
+</html>

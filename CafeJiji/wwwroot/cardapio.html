@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio - Café Jiji</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/fluid.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #fdfbf7; color: #4e342e; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar-jiji { background-color: #5d4037; }
+        .card-produto { border: none; border-radius: 12px; transition: transform 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); background: #ffffff; }
+        .card-produto:hover { transform: translateY(-3px); }
+        .badge-categoria { background-color: #cec4ca; color: #4e342e; font-weight: 600; }
+        .preco { color: #8d6e63; font-weight: bold; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-jiji navbar-dark shadow-sm py-3">
+        <div class="container text-center">
+            <a class="navbar-brand mx-auto d-flex align-items-center gap-2" href="#">
+                <i class="fas fa-cat text-warning"></i> 
+                <span style="letter-spacing: 1px; font-weight: bold;">CAFÉ JIJI • CARDÁPIO</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap" id="containerFiltros">
+            <button class="btn btn-outline-dark active" onclick="filtrar('Todos')">Todos</button>
+            <button class="btn btn-outline-dark" onclick="filtrar('Cafés')">Cafés</button>
+            <button class="btn btn-outline-dark" onclick="filtrar('Doces')">Doces</button>
+            <button class="btn btn-outline-dark" onclick="filtrar('Salgados')">Salgados</button>
+        </div>
+
+        <div class="row g-4" id="gridProdutos">
+            <div class="text-center py-5">
+                <div class="spinner-border text-warning" role="status"></div>
+                <p class="mt-2 text-muted">Passando o café e carregando delícias...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let todosProdutos = [];
+
+        async function carregarCardapio() {
+            try {
+                const response = await fetch('http://localhost:5120/api/produtos');
+                todosProdutos = await response.json();
+                renderizarProdutos(todosProdutos);
+            } catch (error) {
+                document.getElementById('gridProdutos').innerHTML = `<div class="alert alert-danger text-center">Erro ao conectar com o Café Jiji.</div>`;
+            }
+        }
+
+        function renderizarProdutos(lista) {
+            const grid = document.getElementById('gridProdutos');
+            grid.innerHTML = '';
+
+            if(lista.length === 0) {
+                grid.innerHTML = `<p class="text-center text-muted">Nenhum item disponível nesta categoria no momento.</p>`;
+                return;
+            }
+
+            lista.forEach(p => {
+                grid.innerHTML += `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 card-produto p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge badge-categoria">${p.categoria}</span>
+                                ${p.quantidadeEstoque <= 5 ? '<span class="badge bg-danger">Últimas unidades!</span>' : ''}
+                            </div>
+                            <h5 class="card-title fw-bold">${p.nome}</h5>
+                            <p class="text-muted small mb-3">${p.requerPreparo ? '☕ Feito na hora com amor' : '🧁 Prontinho para servir'}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <span class="preco">R$ ${p.preco.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filtrar(categoria) {
+            // Atualiza estado visual dos botões
+            document.querySelectorAll('#containerFiltros button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if(categoria === 'Todos') {
+                renderizarProdutos(todosProdutos);
+            } else {
+                const filtrados = todosProdutos.filter(p => p.categoria === categoria);
+                renderizarProdutos(filtrados);
+            }
+        }
+
+        window.onload = carregarCardapio;
+    </script>
+</body>
+</html>

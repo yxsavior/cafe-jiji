@@ -87,6 +87,7 @@ namespace CafeJiji.Controllers
                     NumeroMesa = g.Key,
                     Itens = g.Select(i => new ItemMesaCozinhaDTO
                     {
+                        Id = i.Id,
                         NomeProduto = i.Produto.Nome,
                         Quantidade = i.Quantidade,
                         HorarioPedido = i.Pedido.CriadoEm
