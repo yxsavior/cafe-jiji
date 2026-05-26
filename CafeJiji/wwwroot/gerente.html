@@ -87,6 +87,7 @@
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR BARRA LATERAL -->
         <aside class="col-12 col-lg-2 p-0 sidebar">
             <nav class="navbar navbar-expand-lg navbar-light bg-white align-items-start flex-lg-column h-100 p-3 p-lg-4">
                 <div class="container-fluid flex-lg-column align-items-stretch p-0">
@@ -137,36 +138,48 @@
             </nav>
         </aside>
 
+        <!-- CONTEÚDO PRINCIPAL (ABAS COMPARTILHADAS) -->
         <main class="col-12 col-lg-10 p-3 p-md-5 tab-content">
             <div id="alertBox" class="alert alert-dismissible d-none shadow-sm" role="alert"></div>
 
-<div class="row g-3 g-md-4 mb-5">
-    <div class="col-12 col-md-4">
-        <div class="card jiji-card p-4">
-            <span class="text-muted small fw-bold text-uppercase">Faturamento Mensal</span>
-            <h2 id="cardFaturamentoMensal" class="fw-bold text-success mt-2 mb-1 fs-3">R$ 0,00</h2>
-            <span id="subtextoFaturamento" class="text-muted small">✨ Carregando...</span>
-        </div>
-    </div>
-    
-    <div class="col-12 col-md-4">
-        <div class="card jiji-card p-4">
-            <span class="text-muted small fw-bold text-uppercase">Pedidos Concluídos</span>
-            <h2 id="cardPedidosConcluidos" class="fw-bold text-dark mt-2 mb-1 fs-3">0</h2>
-            <span id="subtextoPedidos" class="text-muted small">☕ Média de 0 clientes diários</span>
-        </div>
-    </div>
-    
-    <div class="col-12 col-md-4">
-        <div class="card jiji-card p-4">
-            <span class="text-muted small fw-bold text-uppercase">Taxas do Gatil</span>
-            <h2 id="cardTaxasGatil" class="fw-bold text-primary mt-2 mb-1 fs-3">R$ 0,00</h2>
-            <span id="subtextoGatil" class="text-muted small">🐈 0 visitas agendadas</span>
-        </div>
-    </div>
-</div>
+            <!-- ABA 1: DASHBOARD (VISÃO GERAL) -->
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
 
-                <div class="row g-4">
+                <!-- TÍTULO ADICIONADO AQUI -->
+                <div class="mb-4">
+                    <h1 class="fw-bold text-dark mb-1 fs-2">Visão Geral</h1>
+                    <p class="text-muted mb-0 small">Métricas de faturamento e desempenho em tempo real</p>
+                </div>
+                
+                <!-- Cards de Indicadores -->
+                <div class="row g-3 g-md-4 mb-5">
+                    <div class="col-12 col-md-4">
+                        <div class="card jiji-card p-4">
+                            <span class="text-muted small fw-bold text-uppercase">Faturamento Mensal</span>
+                            <h2 id="cardFaturamentoMensal" class="fw-bold text-success mt-2 mb-1 fs-3">R$ 0,00</h2>
+                            <span id="subtextoFaturamento" class="text-muted small">✨ Carregando...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 col-md-4">
+                        <div class="card jiji-card p-4">
+                            <span class="text-muted small fw-bold text-uppercase">Pedidos Concluídos</span>
+                            <h2 id="cardPedidosConcluidos" class="fw-bold text-dark mt-2 mb-1 fs-3">0</h2>
+                            <span id="subtextoPedidos" class="text-muted small">☕ Média de 0 clientes diários</span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 col-md-4">
+                        <div class="card jiji-card p-4">
+                            <span class="text-muted small fw-bold text-uppercase">Taxas do Gatil</span>
+                            <h2 id="cardTaxasGatil" class="fw-bold text-primary mt-2 mb-1 fs-3">R$ 0,00</h2>
+                            <span id="subtextoGatil" class="text-muted small">🐈 0 visitas agendadas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="row g-4 mb-4">
                     <div class="col-12 col-xl-8">
                         <div class="card jiji-card p-4 h-100">
                             <h5 class="fw-bold mb-4">Curva de Faturamento Semanal</h5>
@@ -184,8 +197,15 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Botão de exportação opcional -->
+                <div class="text-end">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="gerarPDF()">📄 Exportar Relatório</button>
+                </div>
+
             </div>
 
+            <!-- ABA 2: CARDÁPIO E PRODUTOS -->
             <div class="tab-pane fade" id="produtos" role="tabpanel">
                 <div class="mb-4">
                     <h1 class="fw-bold text-dark mb-1 fs-2">Gestão do Cardápio</h1>
@@ -241,6 +261,7 @@
                 <div id="listaProdutos" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4"></div>
             </div>
 
+            <!-- ABA 3: GESTÃO DE INSUMOS -->
             <div class="tab-pane fade" id="insumos" role="tabpanel">
                 <div class="mb-4">
                     <h1 class="fw-bold text-dark mb-1 fs-2">Controle de Insumos e Matéria-Prima</h1>
@@ -393,7 +414,6 @@ function prepararEdicao(id, nome, preco, categoria, estoque, minimo) {
     document.getElementById("estoqueMinimo").value = minimo;
     document.getElementById("formTitle").innerText = "📝 Editando Item #" + id;
     
-    // Auto-focus no mobile
     window.scrollTo({ top: document.getElementById("produtoForm").offsetTop - 20, behavior: 'smooth' });
 }
 
@@ -419,7 +439,7 @@ document.getElementById("produtoForm").addEventListener("submit", async function
         });
 
         if (!response.ok) throw new Error("Não foi possível salvar o produto.");
-        showAlert(id ? "Cardápio atualizado!" : "Novo produto inserido!");
+        showAlert(id ? "Cardápio updated!" : "Novo produto inserido!");
         resetarForm();
         carregarProdutos();
     } catch (err) {
@@ -527,7 +547,7 @@ async function deletarInsumo(id, nome) {
 }
 
 // ==========================================
-// GRÁFICOS E PDF
+// PDF EXP
 // ==========================================
 function gerarPDF() {
     const elemento = document.getElementById("dashboard");
@@ -541,49 +561,8 @@ function gerarPDF() {
     html2pdf().set(opcoes).from(elemento).save();
 }
 
-function inicializarGraficos() {
-    const ctxFaturamento = document.getElementById('graficoFaturamento').getContext('2d');
-    new Chart(ctxFaturamento, {
-        type: 'line',
-        data: {
-            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
-            datasets: [{
-                label: 'Faturamento Diário (R$)',
-                data: [1200, 1900, 1500, 2100, 2800, 3500, 1850],
-                borderColor: '#5d4037',
-                backgroundColor: 'rgba(93, 64, 55, 0.1)',
-                borderWidth: 3,
-                tension: 0.3,
-                fill: true
-            }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-    });
-
-    const ctxCategorias = document.getElementById('graficoCategorias').getContext('2d');
-    new Chart(ctxCategorias, {
-        type: 'doughnut',
-        data: {
-            labels: ['Cafés', 'Doces', 'Salgados', 'Gatil (Taxas)'],
-            datasets: [{
-                data: [45, 30, 15, 10],
-                backgroundColor: ['#5d4037', '#fcd34d', '#f87171', '#60a5fa'],
-                borderWidth: 2,
-                borderColor: '#ffffff'
-            }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-    });
-}
-
 let chartFaturamento = null;
 let chartCategorias = null;
-
-// window.onload = () => {
-//     carregarDashboard();
-//     inicializarGraficos();
-//     carregarProdutos();
-// };
 
 window.onload = async () => {
     // Primeiro carregamos os dados brutos do painel
@@ -591,7 +570,6 @@ window.onload = async () => {
     // Depois carregamos os produtos
     carregarProdutos();
 };
-
 </script>
 </body>
 </html>
