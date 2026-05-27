@@ -49,10 +49,6 @@ O sistema foi desenvolvido com foco em responsividade e utilização em disposit
 * Controle de acesso por Roles
 * Hash de senhas com BCrypt
 
-## Documentação da API
-
-* Swagger / OpenAPI
-
 ---
 
 # 3. Instruções de Execução
@@ -122,12 +118,38 @@ dotnet run
 
 ---
 
-## 7. Acessar a documentação Swagger
+## 7. Acessar o sistema
 
-Após iniciar a aplicação, acessar:
+### Página pública
 
-```bash
-https://localhost:xxxx/swagger
+```text
+http://localhost:5120/index.html
+```
+
+### Login do sistema
+
+```text
+http://localhost:5120/login.html
+```
+
+---
+
+## 8. Perfis de acesso disponíveis
+
+Após realizar login, o sistema redireciona automaticamente conforme o perfil do usuário:
+
+| Usuário   | Página           |
+| --------- | ---------------- |
+| gerente   | gerente.html     |
+| barista   | cozinha.html     |
+| atendente | atendimento.html |
+
+---
+
+## 9. Acessar a documentação Swagger
+
+```text
+http://localhost:5120/swagger
 ```
 
 ---
@@ -302,14 +324,4 @@ PUT /api/produtos/{id}
 
 ```http
 DELETE /api/produtos/{id}
-```
-
----
-
-# 📄 Swagger
-
-Documentação disponível em:
-
-```bash
-/swagger
 ```
