@@ -1,0 +1,239 @@
+.hero-section {
+  background: #f8f9fa;
+  position: relative;
+}
+
+.wave {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.wave svg {
+  display: block;
+  width: 100%;
+  height: 50px;
+  fill: #f7f4f9;
+}
+
+.wave-divider {
+  line-height: 0;
+  margin-top: -1px;
+  margin-bottom: -1px;
+}
+
+.wave-divider svg {
+  display: block;
+  width: 100%;
+  height: 90px;
+}
+
+/* cor depende da seção */
+.wave-divider path {
+  /* fill: #e6dbdb; */
+  fill: #f7f4f9
+}
+
+.carousel img {
+  height: 450px;
+  object-fit: cover;
+}
+
+#a-gateria {
+  background: #f8f9fa;
+}
+
+#a-gateria p {
+  line-height: 1.7;
+}
+
+#a-gateria ul {
+  padding-left: 1.2rem;
+}
+
+#a-gateria ul li {
+  margin-bottom: 6px;
+}
+
+.card {
+  border-radius: 14px;
+  transition: 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.cardapio-section {
+  position: relative;
+  min-height: 400px;
+  background: url("https://images.unsplash.com/photo-1509042239860-f550ce710b93") center/cover no-repeat;
+  overflow: hidden;
+}
+
+/* overlay escuro */
+.cardapio-section .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+}
+
+/* conteúdo acima do overlay */
+.cardapio-section .container {
+  z-index: 2;
+}
+
+/* imagem decorativa girando */
+.decor {
+  position: absolute;
+  width: 180px;
+  top: 20px;
+  right: 40px;
+  opacity: 0.8;
+  animation: spin 20s linear infinite;
+}
+
+/* animação rotação */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.gallery-section {
+  background: #f8f9fa;
+  position: relative;
+}
+
+/* WAVES */
+.wave-top,
+.wave-bottom {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  line-height: 0;
+}
+
+.wave-top {
+  top: 0;
+}
+
+.wave-bottom {
+  bottom: 0;
+}
+
+.wave-top svg,
+.wave-bottom svg {
+  width: 100%;
+  height: 80px;
+  display: block;
+  fill: #fff;
+}
+
+/* GALERIA */
+.gallery-img {
+  height: 220px;
+  object-fit: cover;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.gallery-img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.footer {
+  background: #111;
+  color: #fff;
+}
+
+.footer a {
+  color: #ccc;
+  transition: 0.2s;
+}
+
+.footer a:hover {
+  color: #fff;
+}
+
+.footer img {
+  filter: brightness(0) invert(1); /* deixa o logo branco se quiser */
+}
+
+.hero-section {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* wave sempre embaixo da section */
+.wave-bottom {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  line-height: 0;
+}
+
+.wave-bottom svg {
+  width: 100%;
+  height: 80px;
+  display: block;
+}
+#carouselCafe {
+  max-width: 100%;
+}
+
+.carousel-inner {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Faz com que todos os parágrafos do site tenham o padrão da classe 'lead' */
+
+
+/* Customização dos Cards do Café Jiji (Edição Lavanda) */
+.jiji-card {
+    background-color: #f7f4f9; /* Um off-white/lavanda claríssimo e super limpo */
+    border: 2px solid #e6dbdb; /* A cor que você sugeriu, servindo de transição suave */
+    border-radius: 20px;       /* Cantos arredondados amigáveis */
+    box-shadow: 0 8px 24px rgba(118, 93, 133, 0.05); /* Sombra super sutil e levemente arroxeada */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efeito sutil quando o usuário passa o mouse por cima */
+.jiji-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(118, 93, 133, 0.1);
+    
+}
+
+/* Destaca os emojis tirando o visual de texto comum */
+.jiji-icon-wrapper {
+    font-size: 1.8rem;
+    display: inline-block;
+}
+
+/* Um roxo/lavanda mais escuro para o preço ter boa leitura */
+.jiji-price {
+    color: #765d85; 
+}
+
+/* Um destaque em tom lavanda pastel para substituir o badge cinza */
+.jiji-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #695675;
+    background-color: #eeebee; /* Lilás pastel bem delicado */
+    border-radius: 50px;
+}
+
+/* Ajuste opcional para o destaque dos '15 minutos' no Card 2 */
+.font-accent {
+    color: #765d85 !important;
+}

@@ -200,6 +200,10 @@ namespace CafeJiji.Migrations
                     b.Property<int>("EstoqueMinimo")
                         .HasColumnType("int");
 
+                    b.Property<string>("ImagemUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -259,7 +263,7 @@ namespace CafeJiji.Migrations
 
             modelBuilder.Entity("CafeJiji.Models.ItemPedido", b =>
                 {
-                    b.HasOne("CafeJiji.Models.Pedido", null)
+                    b.HasOne("CafeJiji.Models.Pedido", "Pedido")
                         .WithMany("Itens")
                         .HasForeignKey("PedidoId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -270,6 +274,8 @@ namespace CafeJiji.Migrations
                         .HasForeignKey("ProdutoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Pedido");
 
                     b.Navigation("Produto");
                 });

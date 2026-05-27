@@ -1,9 +1,7 @@
-using CafeJiji.Data;
 using CafeJiji.DTOs;
-using CafeJiji.Models;
+using CafeJiji.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CafeJiji.Controllers
 {
@@ -12,46 +10,47 @@ namespace CafeJiji.Controllers
     [Authorize]
     public class GatosController : ControllerBase
     {
-        private readonly CafeJijiDbContext _context;
+        private readonly IGatoService _service;
 
-        public GatosController(CafeJijiDbContext context)
+        public GatosController(IGatoService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        // GET: /api/gatos
+        // =========================
+        // GET ALL
+        // =========================
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var gatos = await _context.Set<Gato>()
-                .Include(g => g.Adotante)
-                .Select(g => new
-                {
-                    g.Id,
-                    g.Nome,
-                    g.Status,
-                    g.DataChegada,
-                    g.DataAdotacao,
-                    g.FotoUrl,
-                    Adotante = g.Adotante == null ? null : new
-                    {
-                        g.Adotante.Id,
-                        g.Adotante.Nome
-                    }
-                })
-                .ToListAsync();
+            var gatos = await _service.GetAllAsync();
 
-            return Ok(gatos);
+            var result = gatos.Select(g => new
+            {
+                g.Id,
+                g.Nome,
+                g.Status,
+                g.DataChegada,
+                g.DataAdotacao,
+                g.FotoUrl,
+                Adotante = g.Adotante == null ? null : new
+                {
+                    g.Adotante.Id,
+                    g.Adotante.Nome
+                }
+            });
+
+            return Ok(result);
         }
 
-        // GET: /api/gatos/{id}
+        // =========================
+        // GET BY ID
+        // =========================
         [HttpGet("{id}")]
         [Authorize(Roles = "Atendente,Gerente")]
         public async Task<IActionResult> GetById(int id)
         {
-            var gato = await _context.Set<Gato>()
-                // .Include(g => g.Adotante)
-                .FirstOrDefaultAsync(g => g.Id == id);
+            var gato = await _service.GetByIdAsync(id);
 
             if (gato == null)
                 return NotFound(new { mensagem = "Gato não encontrado" });
@@ -75,97 +74,69 @@ namespace CafeJiji.Controllers
             });
         }
 
-        // POST: /api/gatos
+        // =========================
+        // CREATE
+        // =========================
         [HttpPost]
         [Authorize(Roles = "Gerente")]
         public async Task<IActionResult> Create(CadastrarGatoDTO dto)
         {
-            var gato = new Gato
-            {
-                Nome = dto.Nome,
-                FotoUrl = dto.FotoUrl,
-                Status = StatusGato.Disponivel,
-                DataChegada = DateOnly.FromDateTime(DateTime.Now)
-            };
-
-            _context.Add(gato);
-            await _context.SaveChangesAsync();
-
+            var gato = await _service.CreateAsync(dto);
             return Ok(gato);
         }
 
-        // PUT: /api/gatos/{id}
+        // =========================
+        // UPDATE
+        // =========================
         [HttpPut("{id}")]
         [Authorize(Roles = "Gerente")]
         public async Task<IActionResult> Update(int id, GatoUpdateDTO dto)
         {
-            var gato = await _context.Set<Gato>()
-                .FirstOrDefaultAsync(g => g.Id == id);
-
-            if (gato == null)
-                return NotFound(new { mensagem = "Gato não encontrado" });
-
-            gato.Nome = dto.Nome;
-            gato.FotoUrl = dto.FotoUrl;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensagem = "Gato atualizado com sucesso" });
+            try
+            {
+                await _service.UpdateAsync(id, dto);
+                return Ok(new { mensagem = "Gato atualizado com sucesso" });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { mensagem = ex.Message });
+            }
         }
 
-        // PUT: /api/gatos/{id}/reservar
+        // =========================
+        // RESERVAR
+        // =========================
         [HttpPut("{id}/reservar")]
         [Authorize(Roles = "Atendente,Gerente")]
         public async Task<IActionResult> Reservar(int id, ReservarGatoDTO dto)
         {
-            var gato = await _context.Set<Gato>()
-                .Include(g => g.Adotante)
-                .FirstOrDefaultAsync(g => g.Id == id);
-
-            if (gato == null)
-                return NotFound(new { mensagem = "Gato não encontrado" });
-
-            if (gato.Status != StatusGato.Disponivel)
-                return BadRequest(new { mensagem = "Gato não está disponível para reserva" });
-
-            var adotante = new Adotante
+            try
             {
-                Nome = dto.AdotanteNome,
-                CPF = dto.AdotanteCPF,
-                Telefone = dto.AdotanteTelefone,
-                Email = dto.AdotanteEmail
-            };
-
-            gato.Adotante = adotante;
-            gato.Status = StatusGato.Reservado;
-
-            _context.Add(adotante);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensagem = "Gato reservado com sucesso" });
+                await _service.ReservarAsync(id, dto);
+                return Ok(new { mensagem = "Gato reservado com sucesso" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensagem = ex.Message });
+            }
         }
 
-        // PUT: /api/gatos/{id}/adotado
+        // =========================
+        // ADOTAR
+        // =========================
         [HttpPut("{id}/adotado")]
         [Authorize(Roles = "Atendente,Gerente")]
         public async Task<IActionResult> Adotar(int id)
         {
-            var gato = await _context.Set<Gato>()
-                .Include(g => g.Adotante)
-                .FirstOrDefaultAsync(g => g.Id == id);
-
-            if (gato == null)
-                return NotFound(new { mensagem = "Gato não encontrado" });
-
-            if (gato.Status != StatusGato.Reservado)
-                return BadRequest(new { mensagem = "Gato precisa estar reservado antes da adoção" });
-
-            gato.Status = StatusGato.Adotado;
-            gato.DataAdotacao = DateOnly.FromDateTime(DateTime.Now);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensagem = "Adoção concluída com sucesso" });
+            try
+            {
+                await _service.AdotarAsync(id);
+                return Ok(new { mensagem = "Adoção concluída com sucesso" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensagem = ex.Message });
+            }
         }
     }
 }

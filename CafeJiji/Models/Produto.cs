@@ -10,6 +10,7 @@
         public int EstoqueMinimo { get; set; }
         public bool RequerPreparo { get; set; }
         public bool Ativo { get; set; }
+        public string ImagemUrl { get; set; } = string.Empty;
         public DateTime CriadoEm {  get; set; }
         public DateTime AtualizadoEm { get; set; }
     }

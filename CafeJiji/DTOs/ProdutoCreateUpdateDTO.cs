@@ -8,6 +8,7 @@ namespace CafeJiji.DTOs
         public int QuantidadeEstoque { get; set; }
         public int EstoqueMinimo { get; set; }
         public bool RequerPreparo { get; set; }
+        public string ImagemUrl { get; set; } = string.Empty;
         public bool Ativo { get; set; } = true;
     }
 }

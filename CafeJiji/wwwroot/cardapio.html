@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Header Café Jiji</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+
+  <style>
+    /* sticky estilo Elementor */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand img {
+      height: 60px;
+    }
+
+    .nav-link {
+      font-weight: 500;
+    }
+
+    /* Limita a altura máxima do slider no topo para não quebrar a proporção */
+    .hero-carousel-img {
+      height: 450px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<nav class="navbar navbar-expand-lg">
+
+  <div class="container">
+
+    <!-- LOGO COM TEXTO -->
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+    <img src="images/logo.png" alt="Logo" style="height: 60px;">
+    <span class="fw-bold tracking-wider" style="font-size: 0.9rem; color: #4e342e; letter-spacing: 1px;">
+        CAFÉ JIJI
+    </span>
+    </a>
+
+    <!-- botão mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- MENU -->
+    <div class="collapse navbar-collapse justify-content-end" id="menu">
+
+      <ul class="navbar-nav gap-3">
+
+        <li class="nav-item">
+          <a class="nav-link" href="index.html#home">Bem-Vindo</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="index.html#sobre">Sobre</a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link" href="index.html#galeria">Galeria</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="cardapio.html">Cardápio</a>
+        </li>
+      </ul>
+
+    </div>
+
+  </div>
+</nav>
+<section>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="container my-5">
+        <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap" id="containerFiltros">
+            <button class="btn btn-outline-dark active" onclick="filtrar('Todos')">Todos</button>
+            <button class="btn btn-outline-dark" onclick="filtrar('Cafés')">Bebidas</button>
+            <button class="btn btn-outline-dark" onclick="filtrar('Doces')">Doces</button>
+            <button class="btn btn-outline-dark" onclick="filtrar('Salgados')">Salgados</button>
+        </div>
+
+        <div class="row g-4" id="gridProdutos">
+            <div class="text-center py-5">
+                <div class="spinner-border text-warning" role="status"></div>
+                <p class="mt-2 text-muted">Passando o café e carregando delícias...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let todosProdutos = [];
+
+        async function carregarCardapio() {
+            try {
+                const response = await fetch('http://localhost:5120/api/produtos');
+                const dadosBrutos = await response.json();
+                todosProdutos = dadosBrutos.filter(p => p.categoria !== 'Serviços');
+                renderizarProdutos(todosProdutos);
+            } catch (error) {
+                document.getElementById('gridProdutos').innerHTML = `<div class="alert alert-danger text-center">Erro ao conectar com o Café Jiji.</div>`;
+            }
+        }
+
+        function renderizarProdutos(lista) {
+            const grid = document.getElementById('gridProdutos');
+            grid.innerHTML = '';
+
+            if(lista.length === 0) {
+                grid.innerHTML = `<p class="text-center text-muted">Nenhum item disponível nesta categoria no momento.</p>`;
+                return;
+            }
+
+            lista.forEach(p => {
+                // Se a API não trouxer imagem, usamos uma foto padrão de cafeteria
+                const fallbackImg = "images/padrao.jpg";
+                const imgUrl = p.imagemUrl || fallbackImg;
+
+                grid.innerHTML += `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 card-produto overflow-hidden">
+                            
+                            <!-- Nova tag de Imagem vinda da sua API -->
+                            <img src="${imgUrl}" class="card-img-top" alt="${p.nome}" style="height: 200px; object-fit: cover;">
+                            
+                            <div class="card-body p-3 d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge badge-categoria">${p.categoria}</span>
+                                    ${p.quantidadeEstoque <= 5 ? '<span class="badge bg-danger">Últimas unidades!</span>' : ''}
+                                </div>
+                                <h5 class="card-title fw-bold text-dark">${p.nome}</h5>
+                                <p class="text-muted small mb-3">${p.requerPreparo ? 'Feito na hora com amor' : 'Prontinho para servir'}</p>
+                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                    <span class="preco">R$ ${p.preco.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filtrar(categoria) {
+            // Atualiza estado visual dos botões
+            document.querySelectorAll('#containerFiltros button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if(categoria === 'Todos') {
+                renderizarProdutos(todosProdutos);
+            } else {
+                const filtrados = todosProdutos.filter(p => p.categoria === categoria);
+                renderizarProdutos(filtrados);
+            }
+        }
+
+        window.onload = carregarCardapio;
+    </script>
+</section>
+<footer class="footer py-4">
+  <div class="container">
+
+    <div class="row align-items-center text-center g-3">
+
+      <div class="col-12 text-center">
+
+        <p class="mb-1 fw-bold">
+          Café Jiji © 2026
+        </p>
+
+        </div>
+
+    </div>
+
+  </div>
+</footer>
+<script>
+  document.getElementById("ano").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

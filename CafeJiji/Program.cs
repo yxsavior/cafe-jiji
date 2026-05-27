@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using CafeJiji.Services;
+// using CafeJiji.Repositories;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -43,7 +44,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "CafeJiji API",
         Version = "v1",
-        Description = "Sistema de gestão de pedidos e cozinha do Café Gateiro"
+        Description = "Sistema de gestão de pedidos e cozinha do Café Jiji"
     });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -64,6 +65,11 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<IPedidoService, PedidoService>();
+builder.Services.AddScoped<IProdutoService, ProdutoService>();
 
 // 5. Configuração de Autenticação JWT
 var jwtKey = Environment.GetEnvironmentVariable("Jwt__Key");
@@ -125,14 +131,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CafeJiji v1"));
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll"); // Ativa o CORS
 
 app.UseAuthentication(); // OBRIGATÓRIO vir antes do Authorization
 app.UseAuthorization();
-
-app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 
